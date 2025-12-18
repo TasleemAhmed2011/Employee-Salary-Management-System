@@ -34,3 +34,4 @@ function loadState() {
   const data = localStorage.getItem(STORE_KEY);
   if (data) Object.assign(state, JSON.parse(data));
 }
+state.employees = state.employees || [];
