@@ -146,5 +146,14 @@ initView(state.ui.currentView || "dashboard");
   if (view === "students") {
   if (typeof initStudentsModule === "function") initStudentsModule();
 }
+// Exams
+if (view === "exams") {
+  if (typeof initExamsModule === "function") initExamsModule();
+}
+
+// Results
+if (view === "results") {
+  if (typeof initResultsModule === "function") initResultsModule();
+}
 
 
