@@ -1,5 +1,6 @@
 // ===============================
-// STUDENTS MODULE (FINAL WORKING)
+// STUDENTS MODULE (CLEAN + WORKING)
+// Dropdown chain + Save + Directory + Edit/Update + Delete
 // ===============================
 
 function _stuEls() {
@@ -8,12 +9,22 @@ function _stuEls() {
     campus: document.getElementById("stuCampus"),
     cls: document.getElementById("stuClass"),
     sec: document.getElementById("stuSection"),
+
+    name: document.getElementById("stuName"),
+    roll: document.getElementById("stuRoll"),
+    age: document.getElementById("stuAge"),
+    adm: document.getElementById("stuAdmissionDate"),
+    guardian: document.getElementById("stuGuardian"),
+    gphone: document.getElementById("stuGuardianPhone"),
+    addr: document.getElementById("stuAddress"),
+
     list: document.getElementById("studentList"),
     search: document.getElementById("searchStudent"),
     filterClass: document.getElementById("filterStuClass"),
     filterSection: document.getElementById("filterStuSection")
   };
 }
+
 function getStudentById(id) {
   return (state.students || []).find(s => s.id === id);
 }
@@ -22,6 +33,7 @@ function initStudentsModule() {
   // Ensure arrays exist
   state.students = state.students || [];
   state.sectionLibrary = state.sectionLibrary || [];
+  state.ui = state.ui || {};
 
   // Populate dropdown chain
   renderStudentInstitutions();
@@ -35,6 +47,7 @@ function initStudentsModule() {
     renderStudentCampuses();
     renderStudentClasses();
     renderStudentSections();
+    renderStudentFilters();
     renderStudentDirectory();
   };
 
@@ -43,11 +56,13 @@ function initStudentsModule() {
     saveState();
     renderStudentClasses();
     renderStudentSections();
+    renderStudentFilters();
     renderStudentDirectory();
   };
 
   if (cls) cls.onchange = () => {
     renderStudentSections();
+    renderStudentFilters();
     renderStudentDirectory();
   };
 
@@ -58,14 +73,14 @@ function initStudentsModule() {
   if (filterSection) filterSection.onchange = () => renderStudentDirectory();
 
   // Buttons
-  bindClick("btnClearStudent", clearStudentForm);
-  bindClick("btnSaveStudent", addStudent);
+  bindClick("btnClearStudent", () => clearStudentForm(false));
+  bindClick("btnSaveStudent", addOrUpdateStudent);
   bindClick("btnAddStudent", () => toast("Fill form → click Save Student"));
 
-  // Initial directory render
   renderStudentDirectory();
 }
 
+// ---------- Dropdown chain ----------
 function renderStudentInstitutions() {
   const { inst, campus, cls, sec } = _stuEls();
   if (!inst || !campus || !cls || !sec) return;
@@ -82,7 +97,7 @@ function renderStudentInstitutions() {
   cls.innerHTML = `<option value="">Select Class</option>`;
   sec.innerHTML = `<option value="">Select Section</option>`;
 
-  // Auto-select last used
+  // Auto-select saved
   if (state.ui.selectedInstitution) {
     inst.value = String(state.ui.selectedInstitution);
     renderStudentCampuses();
@@ -95,7 +110,6 @@ function renderStudentInstitutions() {
     renderStudentSections();
   }
 
-  // Filters
   renderStudentFilters();
 }
 
@@ -136,8 +150,6 @@ function renderStudentClasses() {
     opt.textContent = cl.name;
     cls.appendChild(opt);
   });
-
-  renderStudentFilters();
 }
 
 function renderStudentSections() {
@@ -153,11 +165,10 @@ function renderStudentSections() {
   const institution = state.institutions.find(i => i.id === instId);
   const campusObj = institution?.campuses.find(c => c.id === campusId);
   const classObj = campusObj?.classes.find(cl => cl.id === classId);
-
   if (!classObj) return;
 
   const assignedIds = classObj.sectionIds || [];
-  const assignedSections = state.sectionLibrary.filter(s => assignedIds.includes(s.id));
+  const assignedSections = (state.sectionLibrary || []).filter(s => assignedIds.includes(s.id));
 
   assignedSections.forEach(s => {
     const opt = document.createElement("option");
@@ -165,32 +176,31 @@ function renderStudentSections() {
     opt.textContent = s.name;
     sec.appendChild(opt);
   });
-
-  renderStudentFilters();
 }
 
-// ---------- Student CRUD ----------
-function addStudent() {
-  const instId = Number(document.getElementById("stuInstitution")?.value);
-  const campusId = Number(document.getElementById("stuCampus")?.value);
-  const classId = Number(document.getElementById("stuClass")?.value);
-  const sectionId = Number(document.getElementById("stuSection")?.value);
+// ---------- Save / Update ----------
+function addOrUpdateStudent() {
+  const { inst, campus, cls, sec, name } = _stuEls();
+
+  const instId = Number(inst?.value);
+  const campusId = Number(campus?.value);
+  const classId = Number(cls?.value);
+  const sectionId = Number(sec?.value);
 
   if (!instId || !campusId || !classId || !sectionId) {
     toast("Select Institution, Campus, Class and Section");
     return;
   }
 
-  const name = document.getElementById("stuName").value.trim();
-  if (!name) return toast("Student name is required");
+  const studentName = (name?.value || "").trim();
+  if (!studentName) return toast("Student name is required");
 
-  const student = {
-    id: Date.now(),
+  const payload = {
     institutionId: instId,
     campusId,
     classId,
     sectionId,
-    name,
+    name: studentName,
     roll: document.getElementById("stuRoll").value.trim(),
     age: document.getElementById("stuAge").value,
     admissionDate: document.getElementById("stuAdmissionDate").value,
@@ -199,27 +209,26 @@ function addStudent() {
     address: document.getElementById("stuAddress").value.trim()
   };
 
-  state.students.push(student);
-  saveState();
-
-  renderStudentDirectory();
-  clearStudentForm(false); // keep dropdown selections
-  toast("Student saved ✅");
   const editingId = state.ui.editingStudentId;
 
-if (editingId) {
-  const idx = state.students.findIndex(x => x.id === editingId);
-  if (idx === -1) return toast("Student not found");
+  if (editingId) {
+    // UPDATE
+    const idx = state.students.findIndex(s => s.id === editingId);
+    if (idx === -1) return toast("Student not found");
 
-  state.students[idx] = { ...state.students[idx], ...student };
-  state.ui.editingStudentId = null;
-  document.getElementById("btnSaveStudent").textContent = "Save Student";
-  toast("Student updated ✅");
-} else {
-  state.students.push(student);
-  toast("Student saved ✅");
-}
+    state.students[idx] = { ...state.students[idx], ...payload };
+    state.ui.editingStudentId = null;
+    document.getElementById("btnSaveStudent").textContent = "Save Student";
+    toast("Student updated ✅");
+  } else {
+    // CREATE
+    state.students.push({ id: Date.now(), ...payload });
+    toast("Student saved ✅");
+  }
 
+  saveState();
+  renderStudentDirectory();
+  clearStudentForm(false);
 }
 
 function clearStudentForm(resetDropdowns = false) {
@@ -239,25 +248,28 @@ function clearStudentForm(resetDropdowns = false) {
   }
 }
 
-// ---------- Directory ----------
+// ---------- Directory + Edit/Delete ----------
 function renderStudentDirectory() {
   const { list, search, filterClass, filterSection } = _stuEls();
   if (!list) return;
 
   let rows = (state.students || []).slice();
-<button class="iconBtn" onclick="editStudent(${s.id})">Edit</button>
 
-  // scope by selected institution/campus if chosen
+  // scope by current selection
   const instSel = Number(document.getElementById("stuInstitution")?.value) || null;
   const campusSel = Number(document.getElementById("stuCampus")?.value) || null;
 
   if (instSel) rows = rows.filter(s => s.institutionId === instSel);
   if (campusSel) rows = rows.filter(s => s.campusId === campusSel);
 
-  // filters
+  // search
   const q = (search?.value || "").trim().toLowerCase();
-  if (q) rows = rows.filter(s => (s.name || "").toLowerCase().includes(q) || (s.roll || "").toLowerCase().includes(q));
+  if (q) rows = rows.filter(s =>
+    (s.name || "").toLowerCase().includes(q) ||
+    (s.roll || "").toLowerCase().includes(q)
+  );
 
+  // filters
   const fc = Number(filterClass?.value) || null;
   if (fc) rows = rows.filter(s => s.classId === fc);
 
@@ -280,6 +292,7 @@ function renderStudentDirectory() {
         <div class="itemSub">${s.roll || "—"} · Age ${s.age || "—"}</div>
       </div>
       <div class="itemActions">
+        <button class="iconBtn" onclick="editStudent(${s.id})">Edit</button>
         <button class="iconBtn danger" onclick="deleteStudent(${s.id})">Delete</button>
       </div>
     `;
@@ -287,46 +300,6 @@ function renderStudentDirectory() {
   });
 }
 
-function deleteStudent(id) {
-  if (!confirm("Delete this student?")) return;
-  state.students = (state.students || []).filter(s => s.id !== id);
-  saveState();
-  renderStudentDirectory();
-}
-
-// ---------- Filters dropdowns ----------
-function renderStudentFilters() {
-  const { filterClass, filterSection, inst, campus } = _stuEls();
-  if (!filterClass || !filterSection || !inst || !campus) return;
-
-  filterClass.innerHTML = `<option value="">All Classes</option>`;
-  filterSection.innerHTML = `<option value="">All Sections</option>`;
-
-  const instId = Number(inst.value);
-  const campusId = Number(campus.value);
-
-  const institution = state.institutions.find(i => i.id === instId);
-  const campusObj = institution?.campuses.find(c => c.id === campusId);
-
-  (campusObj?.classes || []).forEach(cl => {
-    const opt = document.createElement("option");
-    opt.value = cl.id;
-    opt.textContent = cl.name;
-    filterClass.appendChild(opt);
-  });
-
-  // Fill sections filter if a class is selected (best UX)
-  const classId = Number(document.getElementById("stuClass")?.value);
-  const classObj = campusObj?.classes.find(cl => cl.id === classId);
-
-  const ids = classObj?.sectionIds || [];
-  state.sectionLibrary.filter(s => ids.includes(s.id)).forEach(sec => {
-    const opt = document.createElement("option");
-    opt.value = sec.id;
-    opt.textContent = sec.name;
-    filterSection.appendChild(opt);
-  });
-}
 function editStudent(id) {
   const s = getStudentById(id);
   if (!s) return;
@@ -353,4 +326,45 @@ function editStudent(id) {
   document.getElementById("stuAddress").value = s.address || "";
 
   document.getElementById("btnSaveStudent").textContent = "Update Student";
+}
+
+function deleteStudent(id) {
+  if (!confirm("Delete this student?")) return;
+  state.students = (state.students || []).filter(s => s.id !== id);
+  saveState();
+  renderStudentDirectory();
+}
+
+// ---------- Filters ----------
+function renderStudentFilters() {
+  const { filterClass, filterSection, inst, campus, cls } = _stuEls();
+  if (!filterClass || !filterSection || !inst || !campus) return;
+
+  filterClass.innerHTML = `<option value="">All Classes</option>`;
+  filterSection.innerHTML = `<option value="">All Sections</option>`;
+
+  const instId = Number(inst.value);
+  const campusId = Number(campus.value);
+
+  const institution = state.institutions.find(i => i.id === instId);
+  const campusObj = institution?.campuses.find(c => c.id === campusId);
+
+  (campusObj?.classes || []).forEach(clx => {
+    const opt = document.createElement("option");
+    opt.value = clx.id;
+    opt.textContent = clx.name;
+    filterClass.appendChild(opt);
+  });
+
+  // sections filter based on selected class (if any)
+  const classId = Number(cls?.value) || null;
+  const classObj = campusObj?.classes.find(x => x.id === classId);
+
+  const ids = classObj?.sectionIds || [];
+  (state.sectionLibrary || []).filter(s => ids.includes(s.id)).forEach(sec => {
+    const opt = document.createElement("option");
+    opt.value = sec.id;
+    opt.textContent = sec.name;
+    filterSection.appendChild(opt);
+  });
 }
