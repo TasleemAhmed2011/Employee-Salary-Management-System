@@ -129,3 +129,18 @@ document.querySelectorAll(".navItem").forEach(btn => {
 // ---------- START APP ----------
 switchView(state.ui.currentView || "dashboard");
 initView(state.ui.currentView || "dashboard");
+  // Dashboard shortcuts
+  if (view === "dashboard") {
+    if (typeof initDashboardModule === "function") initDashboardModule();
+  }
+
+  // Timetable
+  if (view === "timetable") {
+    if (typeof initTimetableModule === "function") initTimetableModule();
+  }
+
+  // Settings
+  if (view === "settings") {
+    if (typeof initSettingsModule === "function") initSettingsModule();
+  }
+

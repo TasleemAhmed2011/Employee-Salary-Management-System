@@ -38,3 +38,29 @@ function initAttendanceModule() {
   bindClick("btnMarkAllPresent", () => typeof markAllPresent === "function" && markAllPresent());
   bindClick("btnMarkAllAbsent", () => typeof markAllAbsent === "function" && markAllAbsent());
 }
+function initAttendanceModule() {
+  // Month picker
+  bindChange("monthPicker", (e) => {
+    if (typeof generateCalendar === "function") {
+      const [y, m] = e.target.value.split("-");
+      generateCalendar(+y, +m - 1);
+    }
+  });
+
+  // Bulk buttons
+  bindClick("btnAllPresent", () => {
+    if (typeof markAllPresent === "function") markAllPresent();
+    else toast("markAllPresent() not found in attendance.js");
+  });
+
+  bindClick("btnAllAbsent", () => {
+    if (typeof markAllAbsent === "function") markAllAbsent();
+    else toast("markAllAbsent() not found in attendance.js");
+  });
+
+  // Leave
+  bindClick("btnAddLeave", () => {
+    if (typeof addLeave === "function") addLeave();
+    else toast("addLeave() not found in attendance.js");
+  });
+}

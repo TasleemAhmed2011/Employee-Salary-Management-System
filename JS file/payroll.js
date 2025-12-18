@@ -25,3 +25,19 @@ function initPayrollModule() {
     else if (typeof calculateSalary === "function") alert("Payroll connected, but payslip function name differs.");
   });
 }
+function initPayrollModule() {
+  bindClick("btnPayslip", () => {
+    if (typeof generatePayslip === "function") generatePayslip();
+    else if (typeof calculateSalary === "function") toast("Payslip button wired ✅ (add generatePayslip() if you want a full payslip)");
+    else toast("Payroll functions missing in payroll.js");
+  });
+
+  bindClick("btnCloseModal", () => {
+    const m = document.getElementById("modal");
+    if (m) m.classList.remove("show");
+  });
+
+  // Optional: sync policy inputs to state.settings if you want
+  bindChange("latePenalty", (e) => { state.settings.latePenalty = +e.target.value || 0; saveState(); });
+  bindChange("absentMode", (e) => { state.settings.absentMode = e.target.value; saveState(); });
+}

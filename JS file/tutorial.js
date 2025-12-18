@@ -38,3 +38,6 @@ $("btnTourPrev").onclick = () => {
 $("btnTourClose").onclick = () => $("tour").classList.remove("show");
 
 if (!localStorage.getItem("tourDone")) showTour();
+bindClick("btnTourClose", () => document.getElementById("tour")?.classList.remove("show"));
+bindClick("btnTourPrev", () => typeof renderTour === "function" && (tourIndex = Math.max(0, tourIndex - 1), renderTour()));
+bindClick("btnTourNext", () => typeof renderTour === "function" && (tourIndex = Math.min(tourSteps.length - 1, tourIndex + 1), renderTour()));

@@ -20,3 +20,19 @@ function initStudentsModule() {
     ids.forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
   });
 }
+function initStudentsModule() {
+  // Dropdown population if you already have institution setup
+  if (typeof renderStudentDropdowns === "function") renderStudentDropdowns();
+
+  bindClick("btnAddStudent", () => toast("Fill form → click Save Student"));
+
+  bindClick("btnClearStudent", () => {
+    ["stuInstitution","stuCampus","stuClass","stuSection","stuName","stuRoll","stuAge","stuAdmissionDate","stuGuardian","stuGuardianPhone","stuAddress"]
+      .forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+  });
+
+  bindClick("btnSaveStudent", () => {
+    if (typeof addStudent === "function") addStudent();
+    else toast("addStudent() not found in students.js");
+  });
+}

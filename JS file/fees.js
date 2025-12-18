@@ -19,3 +19,14 @@ function initFeesModule() {
     if (typeof markSelectedFeePaid === "function") markSelectedFeePaid();
   });
 }
+function initFeesModule() {
+  bindClick("btnGenerateFees", () => {
+    if (typeof generateFees === "function") generateFees();
+    else toast("generateFees() not found in fees.js");
+  });
+
+  bindClick("btnSaveFeePlan", () => {
+    if (typeof saveFeePlan === "function") saveFeePlan();
+    else toast("saveFeePlan() not found in fees.js");
+  });
+}

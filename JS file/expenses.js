@@ -13,3 +13,11 @@ function initExpensesModule() {
     else alert("Expenses: addExpense() not found. Tell me your IDs.");
   });
 }
+function initExpensesModule() {
+  bindClick("btnAddExpense", () => toast("Fill expense form → click Save"));
+
+  bindClick("btnSaveExpense", () => {
+    if (typeof addExpense === "function") addExpense();
+    else toast("addExpense() not found in expenses.js");
+  });
+}
