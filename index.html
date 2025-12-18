@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EduCore Nexus — Education Management ERP</title>
+  <meta name="description" content="EduCore Nexus — Institutions, Campuses, Academics, HR, Students, Fees, Attendance, Events, Finance, Reports." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- TOP BAR -->
+  <header class="topbar" id="tour-topbar">
+    <div class="brand" id="tour-brand">
+      <div class="logoDot"></div>
+      <div class="brandTxt">
+        <div class="brandTitle">EduCore Nexus</div>
+        <div class="brandSub">Education ERP • HR • Students • Fees • Attendance • Finance • Events • Reports</div>
+      </div>
+      <span class="pill">LOCAL MODE</span>
+    </div>
+
+    <div class="topbarRight">
+      <div class="quickStats" id="topQuickStats">
+        <!-- JS fills: Institution, Campus, Month, etc -->
+        <span class="qstat">Institution: <b id="qsInstitution">—</b></span>
+        <span class="qstat">Campus: <b id="qsCampus">—</b></span>
+        <span class="qstat">Month: <b id="qsMonth">—</b></span>
+      </div>
+
+      <div class="topActions">
+        <button class="btn small" id="btnTutorial">Tutorial</button>
+        <button class="btn small" id="btnCommand">Command</button>
+        <button class="btn small" id="btnExport">Export</button>
+        <label class="btn small" for="importFile">Import</label>
+        <input id="importFile" type="file" accept="application/json" hidden />
+        <button class="btn small danger" id="btnReset">Reset</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="tour-sidebar">
+      <div class="sideHeader">
+        <div class="sideTitle">Workspace</div>
+        <div class="sideSub">Navigate modules</div>
+      </div>
+
+      <div class="sideGroup">
+        <button class="navItem active" data-view="dashboard" id="nav-dashboard">📊 Dashboard</button>
+        <button class="navItem" data-view="setup" id="nav-setup">🏫 Setup</button>
+      </div>
+
+      <div class="sideDivider"></div>
+
+      <div class="sideGroupTitle">People</div>
+      <div class="sideGroup">
+        <button class="navItem" data-view="employees" id="nav-employees">👥 Employees (HR)</button>
+        <button class="navItem" data-view="students" id="nav-students">🎓 Students</button>
+      </div>
+
+      <div class="sideDivider"></div>
+
+      <div class="sideGroupTitle">Academics</div>
+      <div class="sideGroup">
+        <button class="navItem" data-view="attendance" id="nav-attendance">📅 Attendance</button>
+        <button class="navItem" data-view="timetable" id="nav-timetable">🗓️ Timetable</button>
+        <button class="navItem" data-view="exams" id="nav-exams">📝 Exams & Results</button>
+      </div>
+
+      <div class="sideDivider"></div>
+
+      <div class="sideGroupTitle">Finance</div>
+      <div class="sideGroup">
+        <button class="navItem" data-view="fees" id="nav-fees">💳 Fees</button>
+        <button class="navItem" data-view="expenses" id="nav-expenses">🧾 Expenses & Bills</button>
+        <button class="navItem" data-view="payroll" id="nav-payroll">💰 Payroll</button>
+      </div>
+
+      <div class="sideDivider"></div>
+
+      <div class="sideGroupTitle">Operations</div>
+      <div class="sideGroup">
+        <button class="navItem" data-view="events" id="nav-events">📣 Events</button>
+        <button class="navItem" data-view="inventory" id="nav-inventory">📦 Inventory</button>
+        <button class="navItem" data-view="reports" id="nav-reports">📈 Reports</button>
+        <button class="navItem" data-view="settings" id="nav-settings">⚙️ Settings</button>
+      </div>
+
+      <div class="sideFooter">
+        <div class="hint">
+          Pro move: Setup → Institution → Campus → Classes/Sections first.
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <section class="view show" id="view-dashboard">
+        <div class="pageHead" id="tour-dashboard">
+          <div>
+            <div class="pageTitle">Dashboard</div>
+            <div class="pageSub">Overview of today + this month + upcoming tasks</div>
+          </div>
+          <div class="pageActions">
+            <input type="month" id="monthPickerGlobal" class="monthPicker" />
+            <button class="btn primary" id="btnNewAction">+ Quick Action</button>
+          </div>
+        </div>
+
+        <div class="dashGrid">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Today</div>
+                <div class="cardSub">Key insights</div>
+              </div>
+              <span class="badge" id="dashTodayDate">—</span>
+            </div>
+            <div class="kpiRow" id="dashKpis">
+              <!-- JS fills -->
+              <div class="kpi"><div class="kpiLabel">Employees</div><div class="kpiVal" id="kpiEmployees">—</div></div>
+              <div class="kpi"><div class="kpiLabel">Students</div><div class="kpiVal" id="kpiStudents">—</div></div>
+              <div class="kpi"><div class="kpiLabel">Fee Due</div><div class="kpiVal" id="kpiFeeDue">—</div></div>
+              <div class="kpi"><div class="kpiLabel">Expenses</div><div class="kpiVal" id="kpiExpenses">—</div></div>
+            </div>
+
+            <div class="mini">
+              <div class="miniTitle">Quick Signals</div>
+              <div class="miniSub" id="dashSignals">No data yet. Add your institution setup first.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Upcoming Events</div>
+                <div class="cardSub">Next 30 days</div>
+              </div>
+              <button class="btn small" id="btnAddEventQuick">Add</button>
+            </div>
+            <div class="list" id="dashUpcomingEvents">
+              <div class="muted">No events yet.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Outstanding Fees</div>
+                <div class="cardSub">Students with unpaid/partial fees</div>
+              </div>
+              <button class="btn small" id="btnOpenFees">Open Fees</button>
+            </div>
+            <div class="list" id="dashFeeDefaulters">
+              <div class="muted">No fee data yet.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Expense Watch</div>
+                <div class="cardSub">Bills + purchases</div>
+              </div>
+              <button class="btn small" id="btnOpenExpenses">Open Expenses</button>
+            </div>
+            <div class="list" id="dashExpenseWatch">
+              <div class="muted">No expenses yet.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETUP -->
+      <section class="view" id="view-setup">
+        <div class="pageHead" id="tour-setup">
+          <div>
+            <div class="pageTitle">Setup</div>
+            <div class="pageSub">Institution → Campuses → Classes/Sections → Academic definitions</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn" id="btnSeedDemo">Seed Demo</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <!-- Institutions -->
+          <div class="card" id="tour-institutions">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Institutions</div>
+                <div class="cardSub">School / College / Institute / University</div>
+              </div>
+              <button class="btn primary small" id="btnAddInstitution">Add</button>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Type</label>
+                <select id="instType">
+                  <option value="school">School</option>
+                  <option value="college">College</option>
+                  <option value="institute">Institute</option>
+                  <option value="university">University</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Name</label>
+                <input id="instName" placeholder="e.g., Benchmark School" />
+              </div>
+            </div>
+
+            <div class="hint">
+              Saturday Rule: School/College/Institute = ON • University = OFF
+            </div>
+
+            <div class="list" id="institutionList"></div>
+          </div>
+
+          <!-- Structure -->
+          <div class="card" id="tour-structure">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Structure</div>
+                <div class="cardSub">Campuses, Classes, Sections, Subjects</div>
+              </div>
+              <span class="badge" id="setupSelectedBadge">Select an institution</span>
+            </div>
+
+            <div class="mini" id="selectedInstitutionPanel">
+              <div class="muted">Pick an institution on the left.</div>
+            </div>
+
+            <div class="split3">
+              <!-- Campuses -->
+              <div class="panel">
+                <div class="panelHead">
+                  <div>
+                    <div class="panelTitle">Campuses / Branches</div>
+                    <div class="panelSub">Add / Rename / Delete</div>
+                  </div>
+                  <button class="btn small primary" id="btnAddCampus">Add</button>
+                </div>
+                <div class="field">
+                  <label>New Campus Name</label>
+                  <input id="campusName" placeholder="e.g., Gulshan Campus" />
+                </div>
+                <div class="list tight" id="campusList"></div>
+              </div>
+
+              <!-- Classes -->
+              <div class="panel">
+                <div class="panelHead">
+                  <div>
+                    <div class="panelTitle">Classes / Programs</div>
+                    <div class="panelSub">Add / Rename / Delete</div>
+                  </div>
+                  <button class="btn small primary" id="btnAddClass">Add</button>
+                </div>
+                <div class="field">
+                  <label>New Class Name</label>
+                  <input id="className" placeholder="e.g., Grade 8 / Year 1 / BSCS 1" />
+                </div>
+                <div class="list tight" id="classList"></div>
+              </div>
+
+              <!-- Sections -->
+              <div class="panel">
+                <div class="panelHead">
+                  <div>
+                    <div class="panelTitle">Sections / Batches</div>
+                    <div class="panelSub">Belong to selected class</div>
+                  </div>
+                  <button class="btn small primary" id="btnAddSection">Add</button>
+                </div>
+                <div class="field">
+                  <label>New Section Name</label>
+                  <input id="sectionName" placeholder="e.g., A / B / Morning / Evening" />
+                </div>
+                <div class="list tight" id="sectionList"></div>
+              </div>
+            </div>
+
+            <div class="panel padTop">
+              <div class="panelHead">
+                <div>
+                  <div class="panelTitle">Subjects & Academic Defaults</div>
+                  <div class="panelSub">Used for teachers, timetables, exams</div>
+                </div>
+                <button class="btn small" id="btnAddSubject">Add Subject</button>
+              </div>
+
+              <div class="formRow">
+                <div class="field">
+                  <label>Subject Name</label>
+                  <input id="subjectName" placeholder="e.g., Mathematics" />
+                </div>
+                <div class="field">
+                  <label>Subject Code (optional)</label>
+                  <input id="subjectCode" placeholder="e.g., MATH-08" />
+                </div>
+              </div>
+
+              <div class="list tight" id="subjectList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EMPLOYEES -->
+      <section class="view" id="view-employees">
+        <div class="pageHead" id="tour-employees">
+          <div>
+            <div class="pageTitle">Employees (HR)</div>
+            <div class="pageSub">Staff profiles, teacher assignments, contracts, payroll-ready</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnAddEmployee">Add Employee</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card" id="empFormCard">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Employee Profile</div>
+                <div class="cardSub">Institution + campus + role-based fields</div>
+              </div>
+              <span class="badge" id="empScopeBadge">Scope: —</span>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Institution</label>
+                <select id="empInstitution"></select>
+              </div>
+              <div class="field">
+                <label>Campus</label>
+                <select id="empCampus"></select>
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Full Name</label>
+                <input id="empName" placeholder="e.g., Ali Raza" />
+              </div>
+              <div class="field">
+                <label>Age</label>
+                <input id="empAge" type="number" min="10" max="90" placeholder="e.g., 28" />
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Role</label>
+                <select id="empRole">
+                  <option value="Teacher">Teacher</option>
+                  <option value="Coordinator">Coordinator</option>
+                  <option value="Head of Campus">Head of Campus</option>
+                  <option value="Staff">Staff</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Base Monthly Salary (PKR)</label>
+                <input id="empSalary" type="number" min="0" placeholder="e.g., 60000" />
+              </div>
+            </div>
+
+            <!-- Teacher Advanced Block -->
+            <div class="mini" id="teacherBlock" style="display:none;">
+              <div class="miniTitle">Teacher Assignment</div>
+              <div class="miniSub">Map teacher to class/sections + subjects (timetable/exams ready)</div>
+
+              <div class="formRow">
+                <div class="field">
+                  <label>Subjects</label>
+                  <select id="tSubjects" multiple></select>
+                  <div class="hint">Hold Ctrl to select multiple subjects (Windows).</div>
+                </div>
+                <div class="field">
+                  <label>Primary Class</label>
+                  <select id="tClass"></select>
+                </div>
+              </div>
+
+              <div class="field" style="padding:14px 14px 0;">
+                <label>Sections</label>
+                <div class="chips" id="tSections"></div>
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Phone</label>
+                <input id="empPhone" placeholder="03xx-xxxxxxx" />
+              </div>
+              <div class="field">
+                <label>Email</label>
+                <input id="empEmail" type="email" placeholder="name@email.com" />
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>CNIC / ID (optional)</label>
+                <input id="empIdNo" placeholder="Optional" />
+              </div>
+              <div class="field">
+                <label>Joining Date</label>
+                <input id="empJoinDate" type="date" />
+              </div>
+            </div>
+
+            <div class="field" style="padding:14px 14px 0;">
+              <label>Notes</label>
+              <textarea id="empNotes" placeholder="Contract notes, responsibilities, etc."></textarea>
+            </div>
+
+            <div class="row">
+              <button class="btn" id="btnClearEmp">Clear</button>
+              <button class="btn primary" id="btnSaveEmp">Save Employee</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Employee Directory</div>
+                <div class="cardSub">Search, filter, manage</div>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="search">
+                <span>⌕</span>
+                <input id="searchEmp" placeholder="Search employees..." />
+              </div>
+              <select id="filterRole" class="selectSmall">
+                <option value="All">All Roles</option>
+                <option value="Teacher">Teacher</option>
+                <option value="Coordinator">Coordinator</option>
+                <option value="Head of Campus">Head of Campus</option>
+                <option value="Staff">Staff</option>
+              </select>
+            </div>
+
+            <div class="mini" id="selectedEmployeePanel">
+              <div class="muted">Select an employee to manage attendance/payroll.</div>
+            </div>
+
+            <div class="list" id="employeeList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STUDENTS -->
+      <section class="view" id="view-students">
+        <div class="pageHead" id="tour-students">
+          <div>
+            <div class="pageTitle">Students</div>
+            <div class="pageSub">Admissions, student profiles, class/section mapping, fee readiness</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnAddStudent">Add Student</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Student Profile</div>
+                <div class="cardSub">Institution → campus → class → section</div>
+              </div>
+              <span class="badge" id="studentScopeBadge">Scope: —</span>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Institution</label>
+                <select id="stuInstitution"></select>
+              </div>
+              <div class="field">
+                <label>Campus</label>
+                <select id="stuCampus"></select>
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Class</label>
+                <select id="stuClass"></select>
+              </div>
+              <div class="field">
+                <label>Section</label>
+                <select id="stuSection"></select>
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Student Name</label>
+                <input id="stuName" placeholder="e.g., Ahmed Ali" />
+              </div>
+              <div class="field">
+                <label>Student ID / Roll No</label>
+                <input id="stuRoll" placeholder="e.g., 8-B-014" />
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Age</label>
+                <input id="stuAge" type="number" min="2" max="35" placeholder="e.g., 14" />
+              </div>
+              <div class="field">
+                <label>Admission Date</label>
+                <input id="stuAdmissionDate" type="date" />
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Guardian Name</label>
+                <input id="stuGuardian" placeholder="e.g., Liaquat Ali" />
+              </div>
+              <div class="field">
+                <label>Guardian Phone</label>
+                <input id="stuGuardianPhone" placeholder="03xx-xxxxxxx" />
+              </div>
+            </div>
+
+            <div class="field" style="padding:14px 14px 0;">
+              <label>Address</label>
+              <textarea id="stuAddress" placeholder="Optional"></textarea>
+            </div>
+
+            <div class="row">
+              <button class="btn" id="btnClearStudent">Clear</button>
+              <button class="btn primary" id="btnSaveStudent">Save Student</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Student Directory</div>
+                <div class="cardSub">Search & filter by class/section</div>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="search">
+                <span>⌕</span>
+                <input id="searchStudent" placeholder="Search students..." />
+              </div>
+              <select id="filterStuClass" class="selectSmall"></select>
+              <select id="filterStuSection" class="selectSmall"></select>
+            </div>
+
+            <div class="list" id="studentList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ATTENDANCE -->
+      <section class="view" id="view-attendance">
+        <div class="pageHead" id="tour-attendance">
+          <div>
+            <div class="pageTitle">Attendance</div>
+            <div class="pageSub">Employee attendance + leave automation + monthly tracking</div>
+          </div>
+          <div class="pageActions">
+            <input id="monthPicker" type="month" class="monthPicker" />
+            <button class="btn" id="btnAllPresent">All Present</button>
+            <button class="btn danger" id="btnAllAbsent">All Absent</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Employee Calendar</div>
+                <div class="cardSub">Green=Present • Red=Absent • Yellow=Late • Blue=Leave • Grey=Off</div>
+              </div>
+              <span class="badge" id="attendanceScopeBadge">Scope: —</span>
+            </div>
+
+            <div class="mini" id="selectedEmployeePanel2">
+              <div class="muted">Select an employee in Employees module.</div>
+            </div>
+
+            <div class="legend">
+              <div class="chip"><span class="dot g"></span> Present</div>
+              <div class="chip"><span class="dot r"></span> Absent</div>
+              <div class="chip"><span class="dot y"></span> Late</div>
+              <div class="chip"><span class="dot b"></span> Leave</div>
+              <div class="chip"><span class="dot s"></span> Off</div>
+            </div>
+
+            <div class="calHeader">
+              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div class="calendar" id="calendar"></div>
+
+            <div class="hint" id="calHint"></div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Leave Management</div>
+                <div class="cardSub">Leaves auto-mark calendar and affect payroll</div>
+              </div>
+              <button class="btn primary small" id="btnAddLeave">Add Leave</button>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Leave Type</label>
+                <select id="leaveType">
+                  <option value="paid">Paid Leave</option>
+                  <option value="sick">Sick Leave (Paid)</option>
+                  <option value="unpaid">Unpaid Leave</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Reason</label>
+                <input id="leaveReason" placeholder="Medical / Travel / Family..." />
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Start Date</label>
+                <input id="leaveStart" type="date" />
+              </div>
+              <div class="field">
+                <label>End Date</label>
+                <input id="leaveEnd" type="date" />
+              </div>
+            </div>
+
+            <div class="hint">Leave dates are locked (delete leave to edit manually).</div>
+            <div class="list" id="leaveList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEES -->
+      <section class="view" id="view-fees">
+        <div class="pageHead" id="tour-fees">
+          <div>
+            <div class="pageTitle">Fees</div>
+            <div class="pageSub">Student billing, payment tracking, defaulters, receipts</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnGenerateFees">Generate Month Fees</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Fee Settings</div>
+                <div class="cardSub">Define class-wise fee plan</div>
+              </div>
+              <button class="btn small" id="btnSaveFeePlan">Save Plan</button>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Class</label>
+                <select id="feeClass"></select>
+              </div>
+              <div class="field">
+                <label>Monthly Fee (PKR)</label>
+                <input id="feeMonthly" type="number" min="0" placeholder="e.g., 12000" />
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Admission Fee (optional)</label>
+                <input id="feeAdmission" type="number" min="0" placeholder="e.g., 5000" />
+              </div>
+              <div class="field">
+                <label>Late Fine (optional)</label>
+                <input id="feeFine" type="number" min="0" placeholder="e.g., 300" />
+              </div>
+            </div>
+
+            <div class="mini">
+              <div class="miniTitle">Defaulter Strategy</div>
+              <div class="miniSub">This module will auto-create receipts + due lists using your plan.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Fee Ledger</div>
+                <div class="cardSub">Paid / Unpaid / Partial payments</div>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="search">
+                <span>⌕</span>
+                <input id="searchFee" placeholder="Search student fees..." />
+              </div>
+              <select id="filterFeeStatus" class="selectSmall">
+                <option value="All">All</option>
+                <option value="Paid">Paid</option>
+                <option value="Unpaid">Unpaid</option>
+                <option value="Partial">Partial</option>
+              </select>
+            </div>
+
+            <div class="list" id="feeLedgerList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPENSES -->
+      <section class="view" id="view-expenses">
+        <div class="pageHead" id="tour-expenses">
+          <div>
+            <div class="pageTitle">Expenses & Bills</div>
+            <div class="pageSub">Monthly bills, purchases, vendor payments, operational costs</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnAddExpense">Add Expense</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Log Expense</div>
+                <div class="cardSub">Categorize costs for reporting</div>
+              </div>
+              <button class="btn small" id="btnSaveExpense">Save</button>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Category</label>
+                <select id="expCategory">
+                  <option>Electricity</option>
+                  <option>Rent</option>
+                  <option>Maintenance</option>
+                  <option>Stationery</option>
+                  <option>Internet</option>
+                  <option>Transport</option>
+                  <option>Security</option>
+                  <option>Vendor Payment</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Amount (PKR)</label>
+                <input id="expAmount" type="number" min="0" placeholder="e.g., 25000" />
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Date</label>
+                <input id="expDate" type="date" />
+              </div>
+              <div class="field">
+                <label>Vendor (optional)</label>
+                <input id="expVendor" placeholder="e.g., K-Electric / Landlord / Supplier" />
+              </div>
+            </div>
+
+            <div class="field" style="padding:14px 14px 0;">
+              <label>Notes</label>
+              <textarea id="expNotes" placeholder="Invoice #, details, etc."></textarea>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Expense Ledger</div>
+                <div class="cardSub">Track and filter by category/month</div>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="search">
+                <span>⌕</span>
+                <input id="searchExpense" placeholder="Search expenses..." />
+              </div>
+              <select id="filterExpenseCat" class="selectSmall">
+                <option value="All">All</option>
+                <option>Electricity</option>
+                <option>Rent</option>
+                <option>Maintenance</option>
+                <option>Stationery</option>
+                <option>Internet</option>
+                <option>Transport</option>
+                <option>Security</option>
+                <option>Vendor Payment</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="list" id="expenseList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAYROLL -->
+      <section class="view" id="view-payroll">
+        <div class="pageHead" id="tour-payroll">
+          <div>
+            <div class="pageTitle">Payroll</div>
+            <div class="pageSub">Salary calculations from attendance + leaves</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnPayslip">Generate Payslip</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Payroll Settings</div>
+                <div class="cardSub">Late / absent rules, bonuses</div>
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Late Deduction (PKR per late)</label>
+                <input id="latePenalty" type="number" min="0" value="300" />
+              </div>
+              <div class="field">
+                <label>Absent Deduction</label>
+                <select id="absentMode">
+                  <option value="daily">Daily Rate (salary / working days)</option>
+                  <option value="fixed">Fixed PKR per absent/unpaid</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="formRow" id="fixedAbsentWrap" style="display:none;">
+              <div class="field">
+                <label>Fixed Absent/Unpaid Deduction (PKR)</label>
+                <input id="absentFixed" type="number" min="0" value="1000" />
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Bonus (PKR)</label>
+                <input id="bonus" type="number" value="0" />
+              </div>
+              <div class="field">
+                <label>Overtime (PKR)</label>
+                <input id="overtime" type="number" value="0" />
+              </div>
+            </div>
+
+            <div class="mini">
+              <div class="miniTitle">Smart Policy</div>
+              <div class="miniSub">If unpaid=0 and lates ≤2 → fairness bonus auto applies.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Salary Breakdown</div>
+                <div class="cardSub">Auto-calculated monthly report</div>
+              </div>
+            </div>
+
+            <div class="mini" id="payrollEmployeePanel">
+              <div class="muted">Select an employee first.</div>
+            </div>
+
+            <pre class="pre" id="breakdown">—</pre>
+          </div>
+        </div>
+
+        <!-- Payslip Modal -->
+        <div class="modal" id="modal">
+          <div class="modalBox">
+            <div class="modalHead">
+              <div class="cardTitle">Payslip Preview</div>
+              <button class="btn small" id="btnCloseModal">Close</button>
+            </div>
+            <pre class="pre" id="payslipText"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- EVENTS -->
+      <section class="view" id="view-events">
+        <div class="pageHead" id="tour-events">
+          <div>
+            <div class="pageTitle">Events</div>
+            <div class="pageSub">School events, upcoming deadlines, reminders</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnAddEvent">Add Event</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Create Event</div>
+                <div class="cardSub">Announcements + calendar ready</div>
+              </div>
+              <button class="btn small" id="btnSaveEvent">Save</button>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Title</label>
+                <input id="eventTitle" placeholder="e.g., PTM / Sports Day / Exam Week" />
+              </div>
+              <div class="field">
+                <label>Type</label>
+                <select id="eventType">
+                  <option>Academic</option>
+                  <option>Sports</option>
+                  <option>Holiday</option>
+                  <option>Meeting</option>
+                  <option>Admin</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Date</label>
+                <input id="eventDate" type="date" />
+              </div>
+              <div class="field">
+                <label>Priority</label>
+                <select id="eventPriority">
+                  <option value="low">Low</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field" style="padding:14px 14px 0;">
+              <label>Details</label>
+              <textarea id="eventDetails" placeholder="Event details..."></textarea>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Event Board</div>
+                <div class="cardSub">Filter & manage</div>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <div class="search">
+                <span>⌕</span>
+                <input id="searchEvent" placeholder="Search events..." />
+              </div>
+              <select id="filterEventType" class="selectSmall">
+                <option value="All">All</option>
+                <option>Academic</option>
+                <option>Sports</option>
+                <option>Holiday</option>
+                <option>Meeting</option>
+                <option>Admin</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="list" id="eventList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TIMETABLE -->
+      <section class="view" id="view-timetable">
+        <div class="pageHead">
+          <div>
+            <div class="pageTitle">Timetable</div>
+            <div class="pageSub">Teacher ↔ Class ↔ Subject ↔ Periods</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnSaveTimetable">Save Timetable</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHead">
+            <div>
+              <div class="cardTitle">Timetable Builder</div>
+              <div class="cardSub">Drag-drop style can be added later; for now structured builder</div>
+            </div>
+            <span class="badge">v1 Builder</span>
+          </div>
+
+          <div class="mini">
+            <div class="muted">
+              This module will use Subjects + Teachers mapping from Setup/Employees.
+              JS will render a timetable grid here.
+            </div>
+          </div>
+
+          <div class="timetableWrap" id="timetableWrap"></div>
+        </div>
+      </section>
+
+      <!-- EXAMS -->
+      <section class="view" id="view-exams">
+        <div class="pageHead">
+          <div>
+            <div class="pageTitle">Exams & Results</div>
+            <div class="pageSub">Exam schedules, marks, result cards (module wiring in JS)</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnAddExam">Add Exam</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Exam Setup</div>
+                <div class="cardSub">Exam name, term, subjects, dates</div>
+              </div>
+            </div>
+            <div class="mini"><div class="muted">JS will implement exam creation + marks entry + report cards.</div></div>
+            <div class="list" id="examList"><div class="muted">No exams yet.</div></div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Result Operations</div>
+                <div class="cardSub">Class-wise marks, student report cards</div>
+              </div>
+            </div>
+            <div class="mini"><div class="muted">JS will implement result entry and report generation.</div></div>
+            <div class="list" id="resultOps"><div class="muted">No results yet.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INVENTORY -->
+      <section class="view" id="view-inventory">
+        <div class="pageHead">
+          <div>
+            <div class="pageTitle">Inventory</div>
+            <div class="pageSub">Stationery, supplies, uniforms, lab equipment tracking</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn primary" id="btnAddItem">Add Item</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="cardHead">
+            <div>
+              <div class="cardTitle">Inventory Ledger</div>
+              <div class="cardSub">Purchase, issue, stock alerts</div>
+            </div>
+          </div>
+          <div class="mini"><div class="muted">JS will implement inventory items, stock, and alert rules.</div></div>
+          <div class="list" id="inventoryList"><div class="muted">No inventory items yet.</div></div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section class="view" id="view-reports">
+        <div class="pageHead">
+          <div>
+            <div class="pageTitle">Reports</div>
+            <div class="pageSub">Finance, HR, Attendance, Fees, Student stats</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn" id="btnGenerateReport">Generate</button>
+          </div>
+        </div>
+
+        <div class="dashGrid">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Finance Summary</div>
+                <div class="cardSub">Fees collected vs expenses</div>
+              </div>
+            </div>
+            <div class="mini"><div class="muted" id="reportFinance">No data yet.</div></div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Attendance Summary</div>
+                <div class="cardSub">Late/absent patterns</div>
+              </div>
+            </div>
+            <div class="mini"><div class="muted" id="reportAttendance">No data yet.</div></div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Student Summary</div>
+                <div class="cardSub">Enrollment by class/section</div>
+              </div>
+            </div>
+            <div class="mini"><div class="muted" id="reportStudents">No data yet.</div></div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">HR Summary</div>
+                <div class="cardSub">Employees by role</div>
+              </div>
+            </div>
+            <div class="mini"><div class="muted" id="reportHR">No data yet.</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings">
+        <div class="pageHead" id="tour-settings">
+          <div>
+            <div class="pageTitle">Settings</div>
+            <div class="pageSub">Backups, policies, tutorial, system preferences</div>
+          </div>
+          <div class="pageActions">
+            <button class="btn" id="btnTutorial2">Replay Tutorial</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">System Policies</div>
+                <div class="cardSub">Working days, attendance rules, fee rules</div>
+              </div>
+              <button class="btn small" id="btnSavePolicies">Save</button>
+            </div>
+
+            <div class="formRow">
+              <div class="field">
+                <label>Default Late Penalty</label>
+                <input id="policyLatePenalty" type="number" min="0" value="300" />
+              </div>
+              <div class="field">
+                <label>Default Fee Fine</label>
+                <input id="policyFeeFine" type="number" min="0" value="300" />
+              </div>
+            </div>
+
+            <div class="mini">
+              <div class="muted">These will act as defaults across modules (you can override per class).</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <div>
+                <div class="cardTitle">Data</div>
+                <div class="cardSub">Export/Import already in top bar</div>
+              </div>
+            </div>
+
+            <div class="mini">
+              <div class="muted">
+                • Export: downloads a full JSON backup<br/>
+                • Import: restores from backup<br/>
+                • Reset: clears everything
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- GLOBAL MODALS -->
+  <div class="modal" id="renameModal">
+    <div class="modalBox">
+      <div class="modalHead">
+        <div class="cardTitle" id="renameTitle">Rename</div>
+        <button class="btn small" id="btnCloseRename">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="field">
+          <label>New Name</label>
+          <input id="renameInput" placeholder="Enter new name..." />
+        </div>
+        <div class="row">
+          <button class="btn" id="btnRenameCancel">Cancel</button>
+          <button class="btn primary" id="btnConfirmRename">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="confirmModal">
+    <div class="modalBox">
+      <div class="modalHead">
+        <div class="cardTitle" id="confirmTitle">Confirm</div>
+        <button class="btn small" id="btnCloseConfirm">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="muted" id="confirmText">Are you sure?</div>
+        <div class="row">
+          <button class="btn" id="btnConfirmNo">No</button>
+          <button class="btn danger" id="btnConfirmYes">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TUTORIAL OVERLAY -->
+  <div class="tour" id="tour">
+    <div class="tourBox">
+      <div class="tourTop">
+        <div class="cardTitle" id="tourTitle">Welcome</div>
+        <button class="btn small" id="btnTourClose">Skip</button>
+      </div>
+
+      <div class="tourProgress">
+        <div class="bar" id="tourBar"></div>
+      </div>
+
+      <div class="muted" id="tourText"></div>
+
+      <div class="tourBottom">
+        <label class="muted chk">
+          <input type="checkbox" id="tourDontShow" />
+          Don’t show automatically next time
+        </label>
+        <div class="muted mono" id="tourStep">Step</div>
+      </div>
+
+      <div class="tourNav">
+        <button class="btn small" id="btnTourPrev">Back</button>
+        <button class="btn primary small" id="btnTourNext">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE -->
+  <div class="modal" id="cmdModal">
+    <div class="modalBox">
+      <div class="modalHead">
+        <div class="cardTitle">Command</div>
+        <button class="btn small" id="btnCmdClose">Close</button>
+      </div>
+      <div class="modalBody">
+        <div class="search cmdSearch">
+          <span>⌕</span>
+          <input id="cmdInput" placeholder="Type a command… (e.g., 'Add Student', 'Open Fees')" />
+        </div>
+        <div class="list tight" id="cmdList"></div>
+      </div>
+    </div>
+  </div>
+
+<!-- CORE STATE & UI -->
+<script src="JS file/state.js"></script>
+<script src="JS file/ui.js"></script>
+
+<!-- MODULES -->
+<script src="JS file/attendance.js"></script>
+<script src="JS file/payroll.js"></script>
+<script src="JS file/tutorial.js"></script>
+<script src="JS file/employees.js"></script>
+<script src="JS file/students.js"></script>
+<script src="JS file/fees.js"></script>
+<script src="JS file/events.js"></script>
+<script src="JS file/expenses.js"></script>
+<script src="JS file/timetable.js"></script>
+<script src="JS file/reports.js"></script>
+<script src="JS file/command.js"></script>
+<script src="JS file/setup.js"></script>
+
+
+<!-- APP BOOTSTRAP (ALWAYS LAST) -->
+<script src="JS file/app.js"></script>
+
+</body>
+</html>
