@@ -1,7 +1,6 @@
-window.appLoaded = true;
 loadState();
 
-// ---------- SAFE BIND HELPERS ----------
+// SAFE BIND
 function bindClick(id, fn) {
   const el = document.getElementById(id);
   if (el) el.onclick = fn;
@@ -10,15 +9,9 @@ function bindChange(id, fn) {
   const el = document.getElementById(id);
   if (el) el.onchange = fn;
 }
-function bindInput(id, fn) {
-  const el = document.getElementById(id);
-  if (el) el.oninput = fn;
-}
 window.bindClick = bindClick;
 window.bindChange = bindChange;
-window.bindInput = bindInput;
 
-// ---------- TOP BAR ----------
 bindClick("btnReset", () => {
   if (confirm("Reset ALL data?")) {
     localStorage.removeItem(STORE_KEY);
@@ -46,66 +39,10 @@ bindChange("importFile", e => {
   reader.readAsText(file);
 });
 
-bindClick("btnTutorial", () => typeof showTour === "function" && showTour());
-bindClick("btnCommand", () => {
-  const m = document.getElementById("cmdModal");
-  if (m) m.classList.add("show");
-});
-
-// ---------- GLOBAL SCOPE DROPDOWNS ----------
-function renderGlobalScope() {
-  const instSel = document.getElementById("globalInstitution");
-  const campusSel = document.getElementById("globalCampus");
-  if (!instSel || !campusSel) return;
-
-  instSel.innerHTML = `<option value="">Institution —</option>`;
-  campusSel.innerHTML = `<option value="">Campus —</option>`;
-
-  state.institutions.forEach(i => {
-    const opt = document.createElement("option");
-    opt.value = i.id;
-    opt.textContent = i.name;
-    instSel.appendChild(opt);
-  });
-
-  if (state.ui.selectedInstitution) {
-    instSel.value = String(state.ui.selectedInstitution);
-    const inst = state.institutions.find(x => x.id === state.ui.selectedInstitution);
-    if (inst) {
-      inst.campuses.forEach(c => {
-        const opt = document.createElement("option");
-        opt.value = c.id;
-        opt.textContent = c.name;
-        campusSel.appendChild(opt);
-      });
-    }
-  }
-  if (state.ui.selectedCampus) campusSel.value = String(state.ui.selectedCampus);
-
-  instSel.onchange = () => {
-    state.ui.selectedInstitution = Number(instSel.value) || null;
-    state.ui.selectedCampus = null;
-    saveState();
-    renderGlobalScope();
-    refreshAllViews();
-  };
-
-  campusSel.onchange = () => {
-    state.ui.selectedCampus = Number(campusSel.value) || null;
-    saveState();
-    refreshAllViews();
-  };
-}
-
-function refreshAllViews() {
-  initView(state.ui.currentView || "dashboard");
-}
-
-// ---------- VIEW INIT ----------
+// MAIN INIT ROUTER
 function initView(view) {
   if (view === "dashboard") {
-    if (typeof initReportsModule === "function") initReportsModule();
-    if (typeof initEventsModule === "function") initEventsModule(true);
+    if (typeof initDashboardModule === "function") initDashboardModule();
   }
 
   if (view === "setup") {
@@ -127,18 +64,23 @@ function initView(view) {
   }
 
   if (view === "timetable") {
-    if (typeof initTimetableModule === "function") initTimetableModule();
-  }
+  if (typeof initTimetableModule === "function") initTimetableModule();
+}
 
-  if (view === "exams") {
-    if (typeof initExamsModule === "function") initExamsModule();
-    if (typeof initResultsModule === "function") initResultsModule();
-  }
+if (view === "exams") {
+  if (typeof initExamsModule === "function") initExamsModule();
+}
+
+if (view === "results") {
+  if (typeof initResultsModule === "function") initResultsModule();
+}
+
 
   saveState();
 }
+window.initView = initView;
 
-// ---------- SIDEBAR NAV ----------
+// SIDEBAR NAV
 document.querySelectorAll(".navItem").forEach(btn => {
   btn.onclick = () => {
     const view = btn.dataset.view;
@@ -147,7 +89,6 @@ document.querySelectorAll(".navItem").forEach(btn => {
   };
 });
 
-// ---------- START ----------
-renderGlobalScope();
+// START
 switchView(state.ui.currentView || "dashboard");
 initView(state.ui.currentView || "dashboard");

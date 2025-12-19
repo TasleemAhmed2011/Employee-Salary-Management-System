@@ -1,69 +1,108 @@
-state.results = state.results || [];
+// ===============================
+// RESULTS MODULE (WORKING DEMO)
+// - Add / Edit / Delete results
+// - Result contains: studentName, className, examName, percentage, grade, file demo
+// ===============================
 
-function initResultsModule(){
-  if (!state.results.length) seedResultsFromStudents();
-  renderResults();
+function initResultsModule() {
+  state.results = state.results || [];
+
+  bindClick("btnAddResult", () => openResultPrompt());
+  renderResultList();
+
+  if (state.results.length === 0) {
+    seedDemoResults();
+    renderResultList();
+  }
 }
 
-function seedResultsFromStudents(){
-  const students = state.students || [];
-  if (!students.length) {
-    // demo fallback if no students exist
-    state.results = [
-      { id: Date.now()+1, student: "Ali", subject: "Math", marks: 85 },
-      { id: Date.now()+2, student: "Ahmed", subject: "Physics", marks: 72 }
-    ];
-    saveState();
+function renderResultList() {
+  const wrap = document.getElementById("resultList");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+  if (!state.results || state.results.length === 0) {
+    wrap.innerHTML = `<div class="muted">No results yet.</div>`;
     return;
   }
-
-  const subjects = ["Math","Physics","CS","English","Chemistry"];
-  state.results = students.slice(0, 12).map(st => ({
-    id: Date.now() + Math.random(),
-    studentId: st.id,
-    student: st.name,
-    subject: subjects[Math.floor(Math.random()*subjects.length)],
-    marks: Math.floor(50 + Math.random()*50)
-  }));
-
-  saveState();
-}
-
-function renderResults(){
-  const list = document.getElementById("resultsList");
-  if (!list) return;
-  list.innerHTML = "";
 
   state.results.forEach(r => {
     const div = document.createElement("div");
     div.className = "listItem";
     div.innerHTML = `
       <div class="itemMain">
-        <div class="itemTitle">${r.student}</div>
-        <div class="muted">${r.subject} • ${r.marks} marks</div>
+        <div class="itemTitle">${escapeHtml(r.studentName)} • ${escapeHtml(r.className)}</div>
+        <div class="itemSub">
+          ${escapeHtml(r.examName)} • ${escapeHtml(r.percentage)}% • Grade ${escapeHtml(r.grade)}
+          ${r.solvedFile ? " • Solved: " + escapeHtml(r.solvedFile) : ""}
+        </div>
       </div>
       <div class="itemActions">
-        <button class="iconBtn" onclick="editResult('${r.id}')">Edit</button>
-        <button class="iconBtn danger" onclick="deleteResult('${r.id}')">Delete</button>
+        <button class="iconBtn" onclick="editResult(${r.id})">Edit</button>
+        <button class="iconBtn danger" onclick="deleteResult(${r.id})">Delete</button>
       </div>
     `;
-    list.appendChild(div);
+    wrap.appendChild(div);
   });
 }
 
-function deleteResult(id){
-  if(!confirm("Delete result?")) return;
-  state.results = state.results.filter(r => String(r.id) !== String(id));
+function openResultPrompt(existing = null) {
+  const studentName = prompt("Student Name:", existing?.studentName || "Ahmed Ali");
+  if (!studentName) return;
+
+  const className = prompt("Class:", existing?.className || "O-1");
+  const examName = prompt("Exam:", existing?.examName || "Mocks");
+  const percentage = prompt("Percentage:", existing?.percentage || "78");
+  const grade = prompt("Grade:", existing?.grade || "A");
+  const solvedFile = prompt("Solved Paper Filename (demo):", existing?.solvedFile || "AhmedAli_Math_Solved.pdf");
+
+  if (existing) {
+    existing.studentName = studentName;
+    existing.className = className;
+    existing.examName = examName;
+    existing.percentage = percentage;
+    existing.grade = grade;
+    existing.solvedFile = solvedFile;
+  } else {
+    state.results.push({
+      id: Date.now(),
+      studentName,
+      className,
+      examName,
+      percentage,
+      grade,
+      solvedFile
+    });
+  }
+
   saveState();
-  renderResults();
+  renderResultList();
 }
 
-function editResult(id){
-  const r = state.results.find(x => String(x.id) === String(id));
-  if (!r) return;
-  const newMarks = prompt("Enter new marks:", r.marks);
-  if (newMarks === null) return;
-  r.marks = Number(newMarks) || r.marks;
+function editResult(id) {
+  const r = (state.results || []).find(x => x.id === id);
+  if (!r) return toast("Result not found");
+  openResultPrompt(r);
+}
+
+function deleteResult(id) {
+  if (!confirm("Delete this result?")) return;
+  state.results = (state.results || []).filter(x => x.id !== id);
   saveState();
-  renderResults();
+  renderResultList();
+}
+
+function seedDemoResults() {
+  state.results.push(
+    { id: Date.now() + 11, studentName: "Ahmed Ali", className: "O-1", examName: "Mocks", percentage: "78", grade: "A", solvedFile: "AhmedAli_Math_Solved.pdf" },
+    { id: Date.now() + 12, studentName: "Fatima Noor", className: "Grade 8", examName: "Mocks", percentage: "85", grade: "A*", solvedFile: "Fatima_CS_Solved.pdf" },
+    { id: Date.now() + 13, studentName: "Usman Khan", className: "O-2", examName: "Final Term Examination", percentage: "69", grade: "B", solvedFile: "Usman_English_Solved.pdf" }
+  );
+  saveState();
+}
+
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
 }
