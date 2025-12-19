@@ -1,15 +1,10 @@
 // ===============================
 // TIMETABLE MODULE (WORKING DEMO)
-<<<<<<< HEAD
 // - Shows a timetable grid
 // - Uses setup Subjects + Teacher employees if available
 // - Falls back to random demo data
 // ===============================
 
-function initTimetableModule() {
-  seedTimetableDemoIfEmpty();
-  renderTimetable();
-=======
 // - Class/Section dropdowns from Setup
 // - Timetable per class+section
 // - Click cell cycles demo entries
@@ -18,7 +13,6 @@ function initTimetableModule() {
 function initTimetableModule() {
   state.timetables = state.timetables || {};
 
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
   bindClick("btnSaveTimetable", saveTimetable);
   bindChange("ttClass", () => {
     fillTTSections();
@@ -107,18 +101,15 @@ function renderTimetable() {
   const classId = Number(cls?.value);
   const sectionId = Number(sec?.value);
 
-<<<<<<< HEAD
   const subjects = getSubjectsPool();
   const teachers = getTeachersPool();
 
   wrap.innerHTML = "";
-=======
   if (!classId || !sectionId) {
     grid.innerHTML = `<div class="muted">Select class + section to view timetable.</div>`;
     if (hint) hint.textContent = "";
     return;
   }
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 
   const key = ttKey(classId, sectionId);
   const table = state.timetables[key] || makeDefaultGrid();
@@ -146,7 +137,6 @@ function renderTimetable() {
       const v = table[r][c] || { subject: "—", teacher: "—" };
       cell.innerHTML = `<strong>${v.subject}</strong><div class="muted">${v.teacher}</div>`;
 
-<<<<<<< HEAD
       const subject = pick(subjects);
       const teacher = pick(teachers);
 
@@ -156,7 +146,6 @@ function renderTimetable() {
       `;
 
       col.appendChild(cell);
-=======
       cell.onclick = () => {
         const next = cycleDemoEntry(v);
         table[r][c] = next;
@@ -166,7 +155,6 @@ function renderTimetable() {
       };
 
       row.appendChild(cell);
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
     });
 
     grid.appendChild(row);
@@ -206,7 +194,6 @@ function cycleDemoEntry(current) {
 }
 
 function saveTimetable() {
-<<<<<<< HEAD
   toast?.("Timetable saved (demo) ✅");
 }
 
@@ -223,7 +210,6 @@ function getTeachersPool() {
     .filter(Boolean);
 
   return list.length ? list : ["Ahmed","Ali","Sara","Fatima","Hassan"];
-=======
   toast("Timetable saved ✅");
 }
 
@@ -237,7 +223,6 @@ function getSelectedSetupScope(classId = null) {
   if (classId && campus) classObj = (campus.classes || []).find(c => c.id === classId);
 
   return { inst, campus, classObj, classObjList: campus?.classes || [] };
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 }
 
 function pick(arr) {

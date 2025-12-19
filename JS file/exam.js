@@ -1,19 +1,15 @@
 // ===============================
 // EXAMS MODULE (WORKING DEMO)
-<<<<<<< HEAD
 // - Add/Edit/Delete exams
 // - Stores exam date ranges + class scope (optional)
 // - Demo "Upload Paper" (stores filename only)
 // - Seeds: Mocks (9–15 Jan) + Final Term (17 May–2 Jun)
-=======
 // - Add / Edit / Delete exams
 // - Demo seed: Mocks + Final Term
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 // ===============================
 
 function initExamsModule() {
   state.exams = state.exams || [];
-<<<<<<< HEAD
   seedExamsIfEmpty();
 
   bindClick("btnAddExam", () => openExamForm());
@@ -131,7 +127,6 @@ function removePaper(examId, paperId) {
   saveState?.();
   renderExams();
 }
-=======
 
   bindClick("btnAddExam", () => openExamPrompt());
   renderExamList();
@@ -141,12 +136,11 @@ function removePaper(examId, paperId) {
     seedDemoExams();
     renderExamList();
   }
-}
+
 
 function renderExamList() {
   const wrap = document.getElementById("examList");
   if (!wrap) return;
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 
   wrap.innerHTML = "";
   if (!state.exams || state.exams.length === 0) {
@@ -154,19 +148,9 @@ function renderExamList() {
     return;
   }
 
-<<<<<<< HEAD
   const exams = (state.exams || []).slice().sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
-  list.innerHTML = "";
-
-  if (!exams.length) {
-    list.innerHTML = `<div class="muted">No exams yet</div>`;
-    return;
-  }
 
   exams.forEach(ex => {
-=======
-  state.exams.forEach(ex => {
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
     const div = document.createElement("div");
     div.className = "listItem";
 
@@ -181,7 +165,6 @@ function renderExamList() {
     div.innerHTML = `
       <div class="itemMain">
         <div class="itemTitle">${escapeHtml(ex.name)}</div>
-<<<<<<< HEAD
         <div class="itemSub">${escapeHtml(ex.startDate)} → ${escapeHtml(ex.endDate)} • Subjects: ${escapeHtml(subjects)}</div>
         <div style="margin-top:8px;">${papersHtml || `<span class="muted">No papers uploaded</span>`}</div>
       </div>
@@ -192,28 +175,6 @@ function renderExamList() {
       </div>
     `;
 
-    list.appendChild(div);
-  });
-}
-
-function escapeHtml(str) {
-  return String(str ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-=======
-        <div class="itemSub">
-          ${escapeHtml(ex.term || "—")} • ${escapeHtml(ex.start || "—")} → ${escapeHtml(ex.end || "—")}
-          ${ex.paperFile ? " • Paper: " + escapeHtml(ex.paperFile) : ""}
-        </div>
-      </div>
-      <div class="itemActions">
-        <button class="iconBtn" onclick="editExam(${ex.id})">Edit</button>
-        <button class="iconBtn danger" onclick="deleteExam(${ex.id})">Delete</button>
-      </div>
-    `;
     wrap.appendChild(div);
   });
 }
@@ -287,5 +248,4 @@ function escapeHtml(s) {
   return String(s || "").replace(/[&<>"']/g, m => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
   }[m]));
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 }

@@ -1,19 +1,15 @@
 // ===============================
 // RESULTS MODULE (WORKING DEMO)
-<<<<<<< HEAD
 // - Add/Edit/Delete results per student
 // - Links to Exam + Student
 // - Stores marks by subject
 // - Demo "Attach solved paper" (stores filename only)
-=======
 // - Add / Edit / Delete results
 // - Result contains: studentName, className, examName, percentage, grade, file demo
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 // ===============================
 
 function initResultsModule() {
   state.results = state.results || [];
-<<<<<<< HEAD
   seedResultsIfPossible();
 
   bindClick("btnAddResult", () => openResultForm());
@@ -144,8 +140,7 @@ function renderResults() {
     const marksText = Object.entries(r.marks || {})
       .map(([k, v]) => `${k}: ${v}`)
       .join(" • ");
-
-=======
+  });
 
   bindClick("btnAddResult", () => openResultPrompt());
   renderResultList();
@@ -167,48 +162,11 @@ function renderResultList() {
   }
 
   state.results.forEach(r => {
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
     const div = document.createElement("div");
     div.className = "listItem";
 
     div.innerHTML = `
       <div class="itemMain">
-<<<<<<< HEAD
-        <div class="itemTitle">${escapeHtml(stu?.name || "Unknown Student")}</div>
-        <div class="itemSub">
-          Exam: ${escapeHtml(ex?.name || "Unknown Exam")} • ${escapeHtml(marksText || "—")}
-        </div>
-        <div style="margin-top:8px;">
-          ${r.attachment ? `<span class="chip">📎 ${escapeHtml(r.attachment.name)}</span>` : `<span class="muted">No attachment</span>`}
-        </div>
-      </div>
-      <div class="itemActions">
-        <button class="iconBtn" onclick="openResultForm(${r.id})">Edit</button>
-        <button class="iconBtn" onclick="attachSolvedPaper(${r.id})">Attach Paper</button>
-        <button class="iconBtn danger" onclick="deleteResult(${r.id})">Delete</button>
-      </div>
-    `;
-
-    list.appendChild(div);
-  });
-}
-
-// ---------- Helpers ----------
-function rand(a, b) {
-  return Math.floor(a + Math.random() * (b - a + 1));
-}
-function clamp(n, a, b) {
-  n = Number.isFinite(n) ? n : 0;
-  return Math.max(a, Math.min(b, n));
-}
-function escapeHtml(str) {
-  return String(str ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-=======
         <div class="itemTitle">${escapeHtml(r.studentName)} • ${escapeHtml(r.className)}</div>
         <div class="itemSub">
           ${escapeHtml(r.examName)} • ${escapeHtml(r.percentage)}% • Grade ${escapeHtml(r.grade)}
@@ -222,6 +180,25 @@ function escapeHtml(str) {
     `;
     wrap.appendChild(div);
   });
+}
+
+// ---------- Helpers ----------
+function rand(a, b) {
+  return Math.floor(a + Math.random() * (b - a + 1));
+}
+
+function clamp(n, a, b) {
+  n = Number.isFinite(n) ? n : 0;
+  return Math.max(a, Math.min(b, n));
+}
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function openResultPrompt(existing = null) {
@@ -283,5 +260,4 @@ function escapeHtml(s) {
   return String(s || "").replace(/[&<>"']/g, m => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
   }[m]));
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 }

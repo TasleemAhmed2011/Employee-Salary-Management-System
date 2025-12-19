@@ -121,22 +121,11 @@ function selectClass(classId) {
 
 
 function addClass() {
-<<<<<<< HEAD
   const name = document.getElementById("className").value.trim();
   const inst = state.institutions.find(i => i.id === state.ui.selectedInstitution);
   if (!inst || !name) return toast("Select institution & enter class");
 
   inst.classes.push({
-=======
-  const campusId = state.ui.selectedCampus;
-  if (!campusId) return toast("Select a campus first");
-
-  const name = document.getElementById("newClassName").value.trim();
-  if (!name) return toast("Enter class name");
-
-  const campus = findCampusById(campusId);
-  campus.classes.push({
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
     id: Date.now(),
     name,
     sections: []
@@ -145,19 +134,6 @@ function addClass() {
   saveState();
   renderClasses();
 }
-
-<<<<<<< HEAD
-// ---------- SECTIONS ----------
-function addSection() {
-  const name = document.getElementById("sectionName").value.trim();
-  const inst = state.institutions.find(i => i.id === state.ui.selectedInstitution);
-  if (!inst || !inst.classes.length || !name) return toast("Add class first");
-
-  inst.classes[inst.classes.length - 1].sections.push(name);
-  saveState();
-  renderClasses();
-}
-=======
 
 // ---------- SECTIONS ----------
 function addSection() {
@@ -177,7 +153,6 @@ function addSection() {
   renderSections();
 }
 
->>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 
 // ---------- SUBJECTS ----------
 function addSubject() {
