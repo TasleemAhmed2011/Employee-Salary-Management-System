@@ -1,10 +1,9 @@
-function $(id) {
-  return document.getElementById(id);
-}
+function $(id) { return document.getElementById(id); }
 
 function switchView(view) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("show"));
-  $("view-" + view).classList.add("show");
+  const el = $("view-" + view);
+  if (el) el.classList.add("show");
 
   document.querySelectorAll(".navItem").forEach(b => b.classList.remove("active"));
   document.querySelector(`[data-view="${view}"]`)?.classList.add("active");
@@ -14,5 +13,6 @@ function switchView(view) {
 }
 
 function toast(msg) {
-  alert(msg); // replace later with fancy toast
+  // replace later with fancy toast UI
+  alert(msg);
 }

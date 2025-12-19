@@ -1,10 +1,30 @@
 // ===============================
-// TIMETABLE MODULE (DEMO WORKING)
+// TIMETABLE MODULE (WORKING DEMO)
+// - Shows a timetable grid
+// - Uses setup Subjects + Teacher employees if available
+// - Falls back to random demo data
 // ===============================
 
 function initTimetableModule() {
+  seedTimetableDemoIfEmpty();
   renderTimetable();
   bindClick("btnSaveTimetable", saveTimetable);
+}
+
+function seedTimetableDemoIfEmpty() {
+  state.timetables = state.timetables || [];
+
+  // only seed once
+  if (state.timetables.length) return;
+
+  // basic demo timetable structure (one per class/campus later)
+  state.timetables.push({
+    id: Date.now(),
+    name: "Demo Timetable (O-Level)",
+    grid: {} // day|period -> {subject, teacher}
+  });
+
+  saveState?.();
 }
 
 function renderTimetable() {
@@ -13,6 +33,9 @@ function renderTimetable() {
 
   const days = ["Mon","Tue","Wed","Thu","Fri","Sat"];
   const periods = ["8:00","9:00","10:00","11:00","12:00"];
+
+  const subjects = getSubjectsPool();
+  const teachers = getTeachersPool();
 
   wrap.innerHTML = "";
 
@@ -25,14 +48,14 @@ function renderTimetable() {
       const cell = document.createElement("div");
       cell.className = "ttCell";
 
-      // RANDOM DEMO DATA
-      const teacher = randomFrom(["Ahmed","Ali","Sara","Fatima"]);
-      const subject = randomFrom(["Math","Physics","CS","English"]);
+      const subject = pick(subjects);
+      const teacher = pick(teachers);
 
       cell.innerHTML = `
-        <strong>${subject}</strong>
-        <div class="muted">${teacher}</div>
+        <strong>${escapeHtml(subject)}</strong>
+        <div class="muted">${escapeHtml(teacher)}</div>
       `;
+
       col.appendChild(cell);
     });
 
@@ -41,9 +64,33 @@ function renderTimetable() {
 }
 
 function saveTimetable() {
-  toast("Timetable saved (demo) ✅");
+  toast?.("Timetable saved (demo) ✅");
 }
 
-function randomFrom(arr) {
+// ---------- Helpers ----------
+function getSubjectsPool() {
+  const list = (state.subjects || []).map(s => s.name).filter(Boolean);
+  return list.length ? list : ["Math","Physics","CS","English","Urdu","Islamiat"];
+}
+
+function getTeachersPool() {
+  const list = (state.employees || [])
+    .filter(e => (e.role || "") === "Teacher")
+    .map(e => e.name)
+    .filter(Boolean);
+
+  return list.length ? list : ["Ahmed","Ali","Sara","Fatima","Hassan"];
+}
+
+function pick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function escapeHtml(str) {
+  return String(str ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }

@@ -26,6 +26,9 @@
         <span class="qstat">Institution: <b id="qsInstitution">—</b></span>
         <span class="qstat">Campus: <b id="qsCampus">—</b></span>
         <span class="qstat">Month: <b id="qsMonth">—</b></span>
+        <select id="globalInstitution" class="topSelect"></select>
+        <select id="globalCampus" class="topSelect"></select>
+
       </div>
 
       <div class="topActions">
@@ -1052,7 +1055,7 @@
             </div>
           </div>
 
-          <div class="timetableWrap" id="timetableWrap"></div>
+          <div class="timetableWrap" id="timetableGrid"></div>
         </div>
       </section>
 
@@ -1064,7 +1067,8 @@
             <div class="pageSub">Exam schedules, marks, result cards (module wiring in JS)</div>
           </div>
           <div class="pageActions">
-            <button class="btn primary" id="btnAddExam">Add Exam</button>
+           <button class="btn primary" id="btnAddExam">Add Exam</button>
+<div class="list" id="examList"></div>
           </div>
         </div>
 
@@ -1081,16 +1085,24 @@
           </div>
 
           <div class="card">
-            <div class="cardHead">
-              <div>
-                <div class="cardTitle">Result Operations</div>
-                <div class="cardSub">Class-wise marks, student report cards</div>
-              </div>
-            </div>
-            <div class="mini"><div class="muted">JS will implement result entry and report generation.</div></div>
-            <div class="list" id="resultOps"><div class="muted">No results yet.</div></div>
-          </div>
-        </div>
+  <div class="cardHead">
+    <div>
+      <div class="cardTitle">Result Operations</div>
+      <div class="cardSub">Class-wise marks, student report cards</div>
+    </div>
+   <button class="btn primary small" id="btnAddResult">Add Result</button>
+<div class="list" id="resultList"></div>
+  </div>
+
+  <div class="mini">
+    <div class="muted">Add results student-wise (demo). Attach solved paper (filename demo).</div>
+  </div>
+
+  <div class="list" id="resultList">
+    <div class="muted">No results yet.</div>
+  </div>
+</div>
+
       </section>
 
       <!-- INVENTORY -->
@@ -1317,24 +1329,26 @@
 <script src="JS file/state.js"></script>
 <script src="JS file/ui.js"></script>
 
+<!-- CORE -->
+<script src="JS file/state.js"></script>
+<script src="JS file/ui.js"></script>
+
 <!-- MODULES -->
-<script src="JS file/attendance.js"></script>
-<script src="JS file/payroll.js"></script>
-<script src="JS file/tutorial.js"></script>
+<script src="JS file/setup.js"></script>
 <script src="JS file/employees.js"></script>
 <script src="JS file/students.js"></script>
-<script src="JS file/fees.js"></script>
-<script src="JS file/events.js"></script>
-<script src="JS file/expenses.js"></script>
+<script src="JS file/attendance.js"></script>
 <script src="JS file/timetable.js"></script>
-<script src="JS file/reports.js"></script>
-<script src="JS file/command.js"></script>
-<script src="JS file/setup.js"></script>
-<script src="JS file/exams.js"></script>
+<script src="JS file/exam.js"></script>
 <script src="JS file/results.js"></script>
-<script src="JS file/app.js"></script>
 
-
+<script src="JS file/events.js"></script>
+<script src="JS file/fees.js"></script>
+<script src="JS file/expenses.js"></script>
+<script src="JS file/payroll.js"></script>
+<script src="JS file/reports.js"></script>
+<script src="JS file/tutorial.js"></script>
+<script src="JS file/command.js"></script>
 
 <!-- APP BOOTSTRAP (ALWAYS LAST) -->
 <script src="JS file/app.js"></script>

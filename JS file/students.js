@@ -1,370 +1,110 @@
 // ===============================
-// STUDENTS MODULE (CLEAN + WORKING)
-// Dropdown chain + Save + Directory + Edit/Update + Delete
+// STUDENTS MODULE
 // ===============================
 
-function _stuEls() {
-  return {
-    inst: document.getElementById("stuInstitution"),
-    campus: document.getElementById("stuCampus"),
-    cls: document.getElementById("stuClass"),
-    sec: document.getElementById("stuSection"),
-
-    name: document.getElementById("stuName"),
-    roll: document.getElementById("stuRoll"),
-    age: document.getElementById("stuAge"),
-    adm: document.getElementById("stuAdmissionDate"),
-    guardian: document.getElementById("stuGuardian"),
-    gphone: document.getElementById("stuGuardianPhone"),
-    addr: document.getElementById("stuAddress"),
-
-    list: document.getElementById("studentList"),
-    search: document.getElementById("searchStudent"),
-    filterClass: document.getElementById("filterStuClass"),
-    filterSection: document.getElementById("filterStuSection")
-  };
-}
-
-function getStudentById(id) {
-  return (state.students || []).find(s => s.id === id);
-}
-
 function initStudentsModule() {
-  // Ensure arrays exist
-  state.students = state.students || [];
-  state.sectionLibrary = state.sectionLibrary || [];
-  state.ui = state.ui || {};
-
-  // Populate dropdown chain
-  renderStudentInstitutions();
-
-  const { inst, campus, cls, sec, search, filterClass, filterSection } = _stuEls();
-
-  if (inst) inst.onchange = () => {
-    state.ui.selectedInstitution = Number(inst.value) || null;
-    state.ui.selectedCampus = null;
-    saveState();
-    renderStudentCampuses();
-    renderStudentClasses();
-    renderStudentSections();
-    renderStudentFilters();
-    renderStudentDirectory();
-  };
-
-  if (campus) campus.onchange = () => {
-    state.ui.selectedCampus = Number(campus.value) || null;
-    saveState();
-    renderStudentClasses();
-    renderStudentSections();
-    renderStudentFilters();
-    renderStudentDirectory();
-  };
-
-  if (cls) cls.onchange = () => {
-    renderStudentSections();
-    renderStudentFilters();
-    renderStudentDirectory();
-  };
-
-  if (sec) sec.onchange = () => renderStudentDirectory();
-
-  if (search) search.oninput = () => renderStudentDirectory();
-  if (filterClass) filterClass.onchange = () => renderStudentDirectory();
-  if (filterSection) filterSection.onchange = () => renderStudentDirectory();
-
-  // Buttons
-  bindClick("btnClearStudent", () => clearStudentForm(false));
-  bindClick("btnSaveStudent", addOrUpdateStudent);
-  bindClick("btnAddStudent", () => toast("Fill form → click Save Student"));
-
+  renderStudentDropdowns();
   renderStudentDirectory();
+
+  bindChange("stuInstitution", renderStudentDropdowns);
+  bindChange("stuClass", renderStudentSections);
 }
 
-// ---------- Dropdown chain ----------
-function renderStudentInstitutions() {
-  const { inst, campus, cls, sec } = _stuEls();
-  if (!inst || !campus || !cls || !sec) return;
+function initStudentsActions() {
+  bindClick("btnSaveStudent", addOrUpdateStudent);
+  bindClick("btnClearStudent", clearStudentForm);
+}
 
-  inst.innerHTML = `<option value="">Select Institution</option>`;
+// ---------- DROPDOWNS ----------
+function renderStudentDropdowns() {
+  const instSel = document.getElementById("stuInstitution");
+  const classSel = document.getElementById("stuClass");
+  const secSel = document.getElementById("stuSection");
+
+  if (!instSel || !classSel || !secSel) return;
+
+  instSel.innerHTML = `<option value="">Institution</option>`;
+  classSel.innerHTML = `<option value="">Class</option>`;
+  secSel.innerHTML = `<option value="">Section</option>`;
+
   state.institutions.forEach(i => {
     const opt = document.createElement("option");
     opt.value = i.id;
     opt.textContent = i.name;
-    inst.appendChild(opt);
+    instSel.appendChild(opt);
   });
 
-  campus.innerHTML = `<option value="">Select Campus</option>`;
-  cls.innerHTML = `<option value="">Select Class</option>`;
-  sec.innerHTML = `<option value="">Select Section</option>`;
+  const inst = state.institutions.find(i => i.id == instSel.value);
+  if (!inst) return;
 
-  // Auto-select saved
-  if (state.ui.selectedInstitution) {
-    inst.value = String(state.ui.selectedInstitution);
-    renderStudentCampuses();
-
-    if (state.ui.selectedCampus) {
-      campus.value = String(state.ui.selectedCampus);
-    }
-
-    renderStudentClasses();
-    renderStudentSections();
-  }
-
-  renderStudentFilters();
-}
-
-function renderStudentCampuses() {
-  const { inst, campus } = _stuEls();
-  if (!inst || !campus) return;
-
-  const instId = Number(inst.value);
-  campus.innerHTML = `<option value="">Select Campus</option>`;
-
-  const institution = state.institutions.find(i => i.id === instId);
-  if (!institution) return;
-
-  institution.campuses.forEach(c => {
+  inst.classes.forEach(c => {
     const opt = document.createElement("option");
-    opt.value = c.id;
+    opt.value = c.name;
     opt.textContent = c.name;
-    campus.appendChild(opt);
-  });
-}
-
-function renderStudentClasses() {
-  const { inst, campus, cls } = _stuEls();
-  if (!inst || !campus || !cls) return;
-
-  cls.innerHTML = `<option value="">Select Class</option>`;
-
-  const instId = Number(inst.value);
-  const campusId = Number(campus.value);
-
-  const institution = state.institutions.find(i => i.id === instId);
-  const campusObj = institution?.campuses.find(c => c.id === campusId);
-  if (!campusObj) return;
-
-  campusObj.classes.forEach(cl => {
-    const opt = document.createElement("option");
-    opt.value = cl.id;
-    opt.textContent = cl.name;
-    cls.appendChild(opt);
+    classSel.appendChild(opt);
   });
 }
 
 function renderStudentSections() {
-  const { inst, campus, cls, sec } = _stuEls();
-  if (!inst || !campus || !cls || !sec) return;
+  const instId = document.getElementById("stuInstitution").value;
+  const clsName = document.getElementById("stuClass").value;
+  const secSel = document.getElementById("stuSection");
 
-  sec.innerHTML = `<option value="">Select Section</option>`;
+  secSel.innerHTML = `<option value="">Section</option>`;
+  const inst = state.institutions.find(i => i.id == instId);
+  if (!inst) return;
 
-  const instId = Number(inst.value);
-  const campusId = Number(campus.value);
-  const classId = Number(cls.value);
+  const cls = inst.classes.find(c => c.name === clsName);
+  if (!cls) return;
 
-  const institution = state.institutions.find(i => i.id === instId);
-  const campusObj = institution?.campuses.find(c => c.id === campusId);
-  const classObj = campusObj?.classes.find(cl => cl.id === classId);
-  if (!classObj) return;
-
-  const assignedIds = classObj.sectionIds || [];
-  const assignedSections = (state.sectionLibrary || []).filter(s => assignedIds.includes(s.id));
-
-  assignedSections.forEach(s => {
+  cls.sections.forEach(s => {
     const opt = document.createElement("option");
-    opt.value = s.id;
-    opt.textContent = s.name;
-    sec.appendChild(opt);
+    opt.value = s;
+    opt.textContent = s;
+    secSel.appendChild(opt);
   });
 }
 
-// ---------- Save / Update ----------
+// ---------- SAVE ----------
 function addOrUpdateStudent() {
-  const { inst, campus, cls, sec, name } = _stuEls();
+  const name = document.getElementById("stuName").value.trim();
+  if (!name) return toast("Student name required");
 
-  const instId = Number(inst?.value);
-  const campusId = Number(campus?.value);
-  const classId = Number(cls?.value);
-  const sectionId = Number(sec?.value);
-
-  if (!instId || !campusId || !classId || !sectionId) {
-    toast("Select Institution, Campus, Class and Section");
-    return;
-  }
-
-  const studentName = (name?.value || "").trim();
-  if (!studentName) return toast("Student name is required");
-
-  const payload = {
-    institutionId: instId,
-    campusId,
-    classId,
-    sectionId,
-    name: studentName,
-    roll: document.getElementById("stuRoll").value.trim(),
-    age: document.getElementById("stuAge").value,
-    admissionDate: document.getElementById("stuAdmissionDate").value,
-    guardian: document.getElementById("stuGuardian").value.trim(),
-    guardianPhone: document.getElementById("stuGuardianPhone").value.trim(),
-    address: document.getElementById("stuAddress").value.trim()
-  };
-
-  const editingId = state.ui.editingStudentId;
-
-  if (editingId) {
-    // UPDATE
-    const idx = state.students.findIndex(s => s.id === editingId);
-    if (idx === -1) return toast("Student not found");
-
-    state.students[idx] = { ...state.students[idx], ...payload };
-    state.ui.editingStudentId = null;
-    document.getElementById("btnSaveStudent").textContent = "Save Student";
-    toast("Student updated ✅");
-  } else {
-    // CREATE
-    state.students.push({ id: Date.now(), ...payload });
-    toast("Student saved ✅");
-  }
+  state.students.push({
+    id: Date.now(),
+    institutionId: document.getElementById("stuInstitution").value,
+    className: document.getElementById("stuClass").value,
+    section: document.getElementById("stuSection").value,
+    name,
+    roll: document.getElementById("stuRoll").value,
+    age: document.getElementById("stuAge").value
+  });
 
   saveState();
   renderStudentDirectory();
-  clearStudentForm(false);
+  clearStudentForm();
 }
 
-function clearStudentForm(resetDropdowns = false) {
-  [
-    "stuName","stuRoll","stuAge","stuAdmissionDate",
-    "stuGuardian","stuGuardianPhone","stuAddress"
-  ].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = "";
-  });
-
-  if (resetDropdowns) {
-    ["stuInstitution","stuCampus","stuClass","stuSection"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
-    });
-  }
-}
-
-// ---------- Directory + Edit/Delete ----------
+// ---------- LIST ----------
 function renderStudentDirectory() {
-  const { list, search, filterClass, filterSection } = _stuEls();
-  if (!list) return;
+  const wrap = document.getElementById("studentList");
+  if (!wrap) return;
 
-  let rows = (state.students || []).slice();
-
-  // scope by current selection
-  const instSel = Number(document.getElementById("stuInstitution")?.value) || null;
-  const campusSel = Number(document.getElementById("stuCampus")?.value) || null;
-
-  if (instSel) rows = rows.filter(s => s.institutionId === instSel);
-  if (campusSel) rows = rows.filter(s => s.campusId === campusSel);
-
-  // search
-  const q = (search?.value || "").trim().toLowerCase();
-  if (q) rows = rows.filter(s =>
-    (s.name || "").toLowerCase().includes(q) ||
-    (s.roll || "").toLowerCase().includes(q)
-  );
-
-  // filters
-  const fc = Number(filterClass?.value) || null;
-  if (fc) rows = rows.filter(s => s.classId === fc);
-
-  const fs = Number(filterSection?.value) || null;
-  if (fs) rows = rows.filter(s => s.sectionId === fs);
-
-  list.innerHTML = "";
-
-  if (rows.length === 0) {
-    list.innerHTML = `<div class="muted">No students found</div>`;
-    return;
-  }
-
-  rows.forEach(s => {
+  wrap.innerHTML = "";
+  state.students.forEach(s => {
     const div = document.createElement("div");
     div.className = "listItem";
     div.innerHTML = `
-      <div class="itemMain">
-        <div class="itemTitle">${s.name}</div>
-        <div class="itemSub">${s.roll || "—"} · Age ${s.age || "—"}</div>
-      </div>
-      <div class="itemActions">
-        <button class="iconBtn" onclick="editStudent(${s.id})">Edit</button>
-        <button class="iconBtn danger" onclick="deleteStudent(${s.id})">Delete</button>
-      </div>
+      <strong>${s.name}</strong>
+      <div class="muted">${s.className}-${s.section}</div>
     `;
-    list.appendChild(div);
+    wrap.appendChild(div);
   });
 }
 
-function editStudent(id) {
-  const s = getStudentById(id);
-  if (!s) return;
-
-  state.ui.editingStudentId = id;
-  saveState();
-
-  document.getElementById("stuInstitution").value = String(s.institutionId);
-  renderStudentCampuses();
-  document.getElementById("stuCampus").value = String(s.campusId);
-
-  renderStudentClasses();
-  document.getElementById("stuClass").value = String(s.classId);
-
-  renderStudentSections();
-  document.getElementById("stuSection").value = String(s.sectionId);
-
-  document.getElementById("stuName").value = s.name || "";
-  document.getElementById("stuRoll").value = s.roll || "";
-  document.getElementById("stuAge").value = s.age || "";
-  document.getElementById("stuAdmissionDate").value = s.admissionDate || "";
-  document.getElementById("stuGuardian").value = s.guardian || "";
-  document.getElementById("stuGuardianPhone").value = s.guardianPhone || "";
-  document.getElementById("stuAddress").value = s.address || "";
-
-  document.getElementById("btnSaveStudent").textContent = "Update Student";
-}
-
-function deleteStudent(id) {
-  if (!confirm("Delete this student?")) return;
-  state.students = (state.students || []).filter(s => s.id !== id);
-  saveState();
-  renderStudentDirectory();
-}
-
-// ---------- Filters ----------
-function renderStudentFilters() {
-  const { filterClass, filterSection, inst, campus, cls } = _stuEls();
-  if (!filterClass || !filterSection || !inst || !campus) return;
-
-  filterClass.innerHTML = `<option value="">All Classes</option>`;
-  filterSection.innerHTML = `<option value="">All Sections</option>`;
-
-  const instId = Number(inst.value);
-  const campusId = Number(campus.value);
-
-  const institution = state.institutions.find(i => i.id === instId);
-  const campusObj = institution?.campuses.find(c => c.id === campusId);
-
-  (campusObj?.classes || []).forEach(clx => {
-    const opt = document.createElement("option");
-    opt.value = clx.id;
-    opt.textContent = clx.name;
-    filterClass.appendChild(opt);
-  });
-
-  // sections filter based on selected class (if any)
-  const classId = Number(cls?.value) || null;
-  const classObj = campusObj?.classes.find(x => x.id === classId);
-
-  const ids = classObj?.sectionIds || [];
-  (state.sectionLibrary || []).filter(s => ids.includes(s.id)).forEach(sec => {
-    const opt = document.createElement("option");
-    opt.value = sec.id;
-    opt.textContent = sec.name;
-    filterSection.appendChild(opt);
+function clearStudentForm() {
+  ["stuName","stuRoll","stuAge"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
   });
 }
