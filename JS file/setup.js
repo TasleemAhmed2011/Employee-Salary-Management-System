@@ -75,6 +75,14 @@ function renderCampuses() {
     wrap.appendChild(div);
   });
 }
+function selectCampus(campusId) {
+  state.ui.selectedCampus = campusId;
+  state.ui.selectedClass = null; // reset downstream
+  saveState();
+  renderClasses();
+  renderSections();
+}
+
 
 function addCampus() {
   const name = document.getElementById("campusName").value.trim();
@@ -105,13 +113,22 @@ function renderClasses() {
     wrap.appendChild(div);
   });
 }
+function selectClass(classId) {
+  state.ui.selectedClass = classId;
+  saveState();
+  renderSections();
+}
+
 
 function addClass() {
-  const name = document.getElementById("className").value.trim();
-  const inst = state.institutions.find(i => i.id === state.ui.selectedInstitution);
-  if (!inst || !name) return toast("Select institution & enter class");
+  const campusId = state.ui.selectedCampus;
+  if (!campusId) return toast("Select a campus first");
 
-  inst.classes.push({
+  const name = document.getElementById("newClassName").value.trim();
+  if (!name) return toast("Enter class name");
+
+  const campus = findCampusById(campusId);
+  campus.classes.push({
     id: Date.now(),
     name,
     sections: []
@@ -121,16 +138,25 @@ function addClass() {
   renderClasses();
 }
 
+
 // ---------- SECTIONS ----------
 function addSection() {
-  const name = document.getElementById("sectionName").value.trim();
-  const inst = state.institutions.find(i => i.id === state.ui.selectedInstitution);
-  if (!inst || !inst.classes.length || !name) return toast("Add class first");
+  const classId = state.ui.selectedClass;
+  if (!classId) return toast("Select a class first");
 
-  inst.classes[inst.classes.length - 1].sections.push(name);
+  const name = document.getElementById("newSectionName").value.trim();
+  if (!name) return toast("Enter section name");
+
+  const cls = findClassById(classId);
+  cls.sections.push({
+    id: Date.now(),
+    name
+  });
+
   saveState();
-  renderClasses();
+  renderSections();
 }
+
 
 // ---------- SUBJECTS ----------
 function addSubject() {
