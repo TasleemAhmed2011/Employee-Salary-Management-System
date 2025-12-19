@@ -75,6 +75,14 @@ function renderCampuses() {
     wrap.appendChild(div);
   });
 }
+function selectCampus(campusId) {
+  state.ui.selectedCampus = campusId;
+  state.ui.selectedClass = null; // reset downstream
+  saveState();
+  renderClasses();
+  renderSections();
+}
+
 
 function addCampus() {
   const name = document.getElementById("campusName").value.trim();
@@ -105,13 +113,30 @@ function renderClasses() {
     wrap.appendChild(div);
   });
 }
+function selectClass(classId) {
+  state.ui.selectedClass = classId;
+  saveState();
+  renderSections();
+}
+
 
 function addClass() {
+<<<<<<< HEAD
   const name = document.getElementById("className").value.trim();
   const inst = state.institutions.find(i => i.id === state.ui.selectedInstitution);
   if (!inst || !name) return toast("Select institution & enter class");
 
   inst.classes.push({
+=======
+  const campusId = state.ui.selectedCampus;
+  if (!campusId) return toast("Select a campus first");
+
+  const name = document.getElementById("newClassName").value.trim();
+  if (!name) return toast("Enter class name");
+
+  const campus = findCampusById(campusId);
+  campus.classes.push({
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
     id: Date.now(),
     name,
     sections: []
@@ -121,6 +146,7 @@ function addClass() {
   renderClasses();
 }
 
+<<<<<<< HEAD
 // ---------- SECTIONS ----------
 function addSection() {
   const name = document.getElementById("sectionName").value.trim();
@@ -131,6 +157,27 @@ function addSection() {
   saveState();
   renderClasses();
 }
+=======
+
+// ---------- SECTIONS ----------
+function addSection() {
+  const classId = state.ui.selectedClass;
+  if (!classId) return toast("Select a class first");
+
+  const name = document.getElementById("newSectionName").value.trim();
+  if (!name) return toast("Enter section name");
+
+  const cls = findClassById(classId);
+  cls.sections.push({
+    id: Date.now(),
+    name
+  });
+
+  saveState();
+  renderSections();
+}
+
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 
 // ---------- SUBJECTS ----------
 function addSubject() {

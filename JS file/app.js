@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 window.appLoaded = true;
 loadState();
 
 // ---------- SAFE BIND HELPERS ----------
+=======
+loadState();
+
+// SAFE BIND
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 function bindClick(id, fn) {
   const el = document.getElementById(id);
   if (el) el.onclick = fn;
@@ -10,15 +16,21 @@ function bindChange(id, fn) {
   const el = document.getElementById(id);
   if (el) el.onchange = fn;
 }
+<<<<<<< HEAD
 function bindInput(id, fn) {
   const el = document.getElementById(id);
   if (el) el.oninput = fn;
 }
+=======
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 window.bindClick = bindClick;
 window.bindChange = bindChange;
 window.bindInput = bindInput;
 
+<<<<<<< HEAD
 // ---------- TOP BAR ----------
+=======
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 bindClick("btnReset", () => {
   if (confirm("Reset ALL data?")) {
     localStorage.removeItem(STORE_KEY);
@@ -46,6 +58,7 @@ bindChange("importFile", e => {
   reader.readAsText(file);
 });
 
+<<<<<<< HEAD
 bindClick("btnTutorial", () => typeof showTour === "function" && showTour());
 bindClick("btnCommand", () => {
   const m = document.getElementById("cmdModal");
@@ -106,6 +119,12 @@ function initView(view) {
   if (view === "dashboard") {
     if (typeof initReportsModule === "function") initReportsModule();
     if (typeof initEventsModule === "function") initEventsModule(true);
+=======
+// MAIN INIT ROUTER
+function initView(view) {
+  if (view === "dashboard") {
+    if (typeof initDashboardModule === "function") initDashboardModule();
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
   }
 
   if (view === "setup") {
@@ -127,6 +146,7 @@ function initView(view) {
   }
 
   if (view === "timetable") {
+<<<<<<< HEAD
     if (typeof initTimetableModule === "function") initTimetableModule();
   }
 
@@ -134,11 +154,25 @@ function initView(view) {
     if (typeof initExamsModule === "function") initExamsModule();
     if (typeof initResultsModule === "function") initResultsModule();
   }
+=======
+  if (typeof initTimetableModule === "function") initTimetableModule();
+}
+
+if (view === "exams") {
+  if (typeof initExamsModule === "function") initExamsModule();
+}
+
+if (view === "results") {
+  if (typeof initResultsModule === "function") initResultsModule();
+}
+
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 
   saveState();
 }
+window.initView = initView;
 
-// ---------- SIDEBAR NAV ----------
+// SIDEBAR NAV
 document.querySelectorAll(".navItem").forEach(btn => {
   btn.onclick = () => {
     const view = btn.dataset.view;
@@ -147,7 +181,11 @@ document.querySelectorAll(".navItem").forEach(btn => {
   };
 });
 
+<<<<<<< HEAD
 // ---------- START ----------
 renderGlobalScope();
+=======
+// START
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 switchView(state.ui.currentView || "dashboard");
 initView(state.ui.currentView || "dashboard");

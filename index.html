@@ -71,7 +71,9 @@
       <div class="sideGroup">
         <button class="navItem" data-view="attendance" id="nav-attendance">📅 Attendance</button>
         <button class="navItem" data-view="timetable" id="nav-timetable">🗓️ Timetable</button>
-        <button class="navItem" data-view="exams" id="nav-exams">📝 Exams & Results</button>
+        <button class="navItem" data-view="exams" id="nav-exams">📝 Exams </button>
+        <button class="navItem" data-view="results" id="nav-results">Results</button>
+
       </div>
 
       <div class="sideDivider"></div>
@@ -576,111 +578,113 @@
       </section>
 
       <!-- ATTENDANCE -->
-      <section class="view" id="view-attendance">
-        <div class="pageHead" id="tour-attendance">
-          <div>
-            <div class="pageTitle">Attendance</div>
-            <div class="pageSub">Employee attendance + leave automation + monthly tracking</div>
-          </div>
-          <div class="pageActions">
-            <input id="monthPicker" type="month" class="monthPicker" />
-            <button class="btn" id="btnAllPresent">All Present</button>
-            <button class="btn danger" id="btnAllAbsent">All Absent</button>
-          </div>
+<!-- ATTENDANCE -->
+<section class="view" id="view-attendance">
+  <div class="pageHead" id="tour-attendance">
+    <div>
+      <div class="pageTitle">Attendance</div>
+      <div class="pageSub">Teacher attendance + leave automation + monthly tracking</div>
+    </div>
+    <div class="pageActions">
+      <input id="monthPicker" type="month" class="monthPicker" />
+      <button class="btn" id="btnAllPresent">All Present</button>
+      <button class="btn danger" id="btnAllAbsent">All Absent</button>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="cardHead">
+        <div>
+          <div class="cardTitle">Teacher Calendar</div>
+          <div class="cardSub">Green=Present • Red=Absent • Yellow=Late • Blue=Leave • Grey=Off</div>
         </div>
+        <span class="badge" id="attendanceScopeBadge">Scope: —</span>
+      </div>
 
-        <div class="grid2">
-          <div class="card">
-            <div class="cardHead">
-              <div>
-                <div class="cardTitle">Employee Calendar</div>
-                <div class="cardSub">Green=Present • Red=Absent • Yellow=Late • Blue=Leave • Grey=Off</div>
-              </div>
-              <span class="badge" id="attendanceScopeBadge">Scope: —</span>
-            </div>
-
-            <div class="mini" id="selectedEmployeePanel2">
-              <div class="muted">Select an employee in Employees module.</div>
-            </div>
-
-            <div class="legend">
-              <div class="chip"><span class="dot g"></span> Present</div>
-              <div class="chip"><span class="dot r"></span> Absent</div>
-              <div class="chip"><span class="dot y"></span> Late</div>
-              <div class="chip"><span class="dot b"></span> Leave</div>
-              <div class="chip"><span class="dot s"></span> Off</div>
-            </div>
-
-            <div class="calHeader">
-              <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-            </div>
-            <div class="formRow">
-  <div class="field">
-    <label>Institution</label>
-    <select id="attInstitution"></select>
-  </div>
-  <div class="field">
-    <label>Campus</label>
-    <select id="attCampus"></select>
-  </div>
-</div>
-
-<div class="formRow">
-  <div class="field">
-    <label>Sector / Program</label>
-    <select id="attSector"></select>
-  </div>
-  <div class="field">
-    <label>Teacher</label>
-    <select id="attTeacher"></select>
-  </div>
-</div>
-
-            <div class="calendar" id="calendar"></div>
-
-            <div class="hint" id="calHint"></div>
-          </div>
-
-          <div class="card">
-            <div class="cardHead">
-              <div>
-                <div class="cardTitle">Leave Management</div>
-                <div class="cardSub">Leaves auto-mark calendar and affect payroll</div>
-              </div>
-              <button class="btn primary small" id="btnAddLeave">Add Leave</button>
-            </div>
-
-            <div class="formRow">
-              <div class="field">
-                <label>Leave Type</label>
-                <select id="leaveType">
-                  <option value="paid">Paid Leave</option>
-                  <option value="sick">Sick Leave (Paid)</option>
-                  <option value="unpaid">Unpaid Leave</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Reason</label>
-                <input id="leaveReason" placeholder="Medical / Travel / Family..." />
-              </div>
-            </div>
-
-            <div class="formRow">
-              <div class="field">
-                <label>Start Date</label>
-                <input id="leaveStart" type="date" />
-              </div>
-              <div class="field">
-                <label>End Date</label>
-                <input id="leaveEnd" type="date" />
-              </div>
-            </div>
-
-            <div class="hint">Leave dates are locked (delete leave to edit manually).</div>
-            <div class="list" id="leaveList"></div>
-          </div>
+      <!-- ✅ NEW: Filters -->
+      <div class="formRow">
+        <div class="field">
+          <label>Institution</label>
+          <select id="attInstitution"></select>
         </div>
-      </section>
+        <div class="field">
+          <label>Campus</label>
+          <select id="attCampus"></select>
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div class="field">
+          <label>Program / Sector</label>
+          <select id="attSector"></select>
+        </div>
+        <div class="field">
+          <label>Teacher</label>
+          <select id="attTeacher"></select>
+        </div>
+      </div>
+
+      <div class="mini" id="selectedEmployeePanel2">
+        <div class="muted">Pick a teacher above to mark attendance.</div>
+      </div>
+
+      <div class="legend">
+        <div class="chip"><span class="dot g"></span> Present</div>
+        <div class="chip"><span class="dot r"></span> Absent</div>
+        <div class="chip"><span class="dot y"></span> Late</div>
+        <div class="chip"><span class="dot b"></span> Leave</div>
+        <div class="chip"><span class="dot s"></span> Off</div>
+      </div>
+
+      <div class="calHeader">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+
+      <div class="calendar" id="calendar"></div>
+      <div class="hint" id="calHint"></div>
+    </div>
+
+    <div class="card">
+      <div class="cardHead">
+        <div>
+          <div class="cardTitle">Leave Management</div>
+          <div class="cardSub">Leaves auto-mark calendar and affect payroll</div>
+        </div>
+        <button class="btn primary small" id="btnAddLeave">Add Leave</button>
+      </div>
+
+      <div class="formRow">
+        <div class="field">
+          <label>Leave Type</label>
+          <select id="leaveType">
+            <option value="paid">Paid Leave</option>
+            <option value="sick">Sick Leave (Paid)</option>
+            <option value="unpaid">Unpaid Leave</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Reason</label>
+          <input id="leaveReason" placeholder="Medical / Travel / Family..." />
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div class="field">
+          <label>Start Date</label>
+          <input id="leaveStart" type="date" />
+        </div>
+        <div class="field">
+          <label>End Date</label>
+          <input id="leaveEnd" type="date" />
+        </div>
+      </div>
+
+      <div class="hint">Leave dates are locked (delete leave to edit manually).</div>
+      <div class="list" id="leaveList"></div>
+    </div>
+  </div>
+</section>
 
       <!-- FEES -->
       <section class="view" id="view-fees">
@@ -1028,33 +1032,34 @@
       </section>
 
       <!-- TIMETABLE -->
-      <section class="view" id="view-timetable">
-        <div class="pageHead">
-          <div>
-            <div class="pageTitle">Timetable</div>
-            <div class="pageSub">Teacher ↔ Class ↔ Subject ↔ Periods</div>
-          </div>
-          <div class="pageActions">
-            <button class="btn primary" id="btnSaveTimetable">Save Timetable</button>
-          </div>
-        </div>
+<section class="view" id="view-timetable">
+  <div class="pageHead">
+    <div>
+      <div class="pageTitle">Timetable</div>
+      <div class="pageSub">Class → Section → Weekly periods</div>
+    </div>
+    <div class="pageActions">
+      <select id="ttClass"></select>
+      <select id="ttSection"></select>
+      <button class="btn primary" id="btnSaveTimetable">Save Timetable</button>
+    </div>
+  </div>
 
-        <div class="card">
-          <div class="cardHead">
-            <div>
-              <div class="cardTitle">Timetable Builder</div>
-              <div class="cardSub">Drag-drop style can be added later; for now structured builder</div>
-            </div>
-            <span class="badge">v1 Builder</span>
-          </div>
+  <div class="card">
+    <div class="cardHead">
+      <div>
+        <div class="cardTitle">Timetable Builder</div>
+        <div class="cardSub">Click a cell to cycle demo entries (you can upgrade later)</div>
+      </div>
+      <span class="badge">v1</span>
+    </div>
 
-          <div class="mini">
-            <div class="muted">
-              This module will use Subjects + Teachers mapping from Setup/Employees.
-              JS will render a timetable grid here.
-            </div>
-          </div>
+    <div class="timetableWrap" id="timetableGrid"></div>
+    <div class="hint" id="ttHint"></div>
+  </div>
+</section>
 
+<<<<<<< HEAD
           <div class="timetableWrap" id="timetableGrid"></div>
         </div>
       </section>
@@ -1104,6 +1109,78 @@
 </div>
 
       </section>
+=======
+
+      <!-- EXAMS -->
+<section class="view" id="view-exams">
+  <div class="pageHead">
+    <div>
+      <div class="pageTitle">Exams</div>
+      <div class="pageSub">Create exam schedules + attach papers</div>
+    </div>
+    <div class="pageActions">
+      <button class="btn primary" id="btnAddExam">Add Exam</button>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="cardHead">
+        <div>
+          <div class="cardTitle">Exam Setup</div>
+          <div class="cardSub">Name, dates, classes, subjects</div>
+        </div>
+      </div>
+
+      <div class="list" id="examList">
+        <div class="muted">No exams yet.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardHead">
+        <div>
+          <div class="cardTitle">Papers (Demo)</div>
+          <div class="cardSub">Example upload reference (filename)</div>
+        </div>
+      </div>
+
+      <div class="mini">
+        <div class="muted">
+          Demo: Store paper filename in exam. (Real upload later via server)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- RESULTS -->
+<section class="view" id="view-results">
+  <div class="pageHead">
+    <div>
+      <div class="pageTitle">Results</div>
+      <div class="pageSub">Student-wise marks + report card demo</div>
+    </div>
+    <div class="pageActions">
+      <button class="btn primary" id="btnAddResult">Add Result</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardHead">
+      <div>
+        <div class="cardTitle">Result Records</div>
+        <div class="cardSub">Edit / Delete • Attach solved paper filename (demo)</div>
+      </div>
+    </div>
+
+    <div class="list" id="resultList">
+      <div class="muted">No results yet.</div>
+    </div>
+  </div>
+</section>
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 
       <!-- INVENTORY -->
       <section class="view" id="view-inventory">
@@ -1325,10 +1402,18 @@
     </div>
   </div>
 
-<!-- CORE STATE & UI -->
-<script src="JS file/state.js"></script>
-<script src="JS file/ui.js"></script>
+<script src="state.js"></script>
+<script src="ui.js"></script>
+<script src="setup.js"></script>
+<script src="employees.js"></script>
+<script src="students.js"></script>
+<script src="attendance.js"></script>
+<script src="timetable.js"></script>
+<script src="exam.js"></script>
+<script src="results.js"></script>
+<script src="app.js"></script>
 
+<<<<<<< HEAD
 <!-- CORE -->
 <script src="JS file/state.js"></script>
 <script src="JS file/ui.js"></script>
@@ -1352,6 +1437,8 @@
 
 <!-- APP BOOTSTRAP (ALWAYS LAST) -->
 <script src="JS file/app.js"></script>
+=======
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 
 </body>
 </html>

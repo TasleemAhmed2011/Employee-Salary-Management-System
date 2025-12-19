@@ -1,13 +1,19 @@
 // ===============================
 // EXAMS MODULE (WORKING DEMO)
+<<<<<<< HEAD
 // - Add/Edit/Delete exams
 // - Stores exam date ranges + class scope (optional)
 // - Demo "Upload Paper" (stores filename only)
 // - Seeds: Mocks (9–15 Jan) + Final Term (17 May–2 Jun)
+=======
+// - Add / Edit / Delete exams
+// - Demo seed: Mocks + Final Term
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 // ===============================
 
 function initExamsModule() {
   state.exams = state.exams || [];
+<<<<<<< HEAD
   seedExamsIfEmpty();
 
   bindClick("btnAddExam", () => openExamForm());
@@ -125,11 +131,30 @@ function removePaper(examId, paperId) {
   saveState?.();
   renderExams();
 }
+=======
 
-function renderExams() {
-  const list = document.getElementById("examList");
-  if (!list) return;
+  bindClick("btnAddExam", () => openExamPrompt());
+  renderExamList();
 
+  // auto seed once if empty
+  if (state.exams.length === 0) {
+    seedDemoExams();
+    renderExamList();
+  }
+}
+
+function renderExamList() {
+  const wrap = document.getElementById("examList");
+  if (!wrap) return;
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
+
+  wrap.innerHTML = "";
+  if (!state.exams || state.exams.length === 0) {
+    wrap.innerHTML = `<div class="muted">No exams yet.</div>`;
+    return;
+  }
+
+<<<<<<< HEAD
   const exams = (state.exams || []).slice().sort((a, b) => (a.startDate || "").localeCompare(b.startDate || ""));
   list.innerHTML = "";
 
@@ -139,6 +164,9 @@ function renderExams() {
   }
 
   exams.forEach(ex => {
+=======
+  state.exams.forEach(ex => {
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
     const div = document.createElement("div");
     div.className = "listItem";
 
@@ -153,6 +181,7 @@ function renderExams() {
     div.innerHTML = `
       <div class="itemMain">
         <div class="itemTitle">${escapeHtml(ex.name)}</div>
+<<<<<<< HEAD
         <div class="itemSub">${escapeHtml(ex.startDate)} → ${escapeHtml(ex.endDate)} • Subjects: ${escapeHtml(subjects)}</div>
         <div style="margin-top:8px;">${papersHtml || `<span class="muted">No papers uploaded</span>`}</div>
       </div>
@@ -174,4 +203,89 @@ function escapeHtml(str) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+=======
+        <div class="itemSub">
+          ${escapeHtml(ex.term || "—")} • ${escapeHtml(ex.start || "—")} → ${escapeHtml(ex.end || "—")}
+          ${ex.paperFile ? " • Paper: " + escapeHtml(ex.paperFile) : ""}
+        </div>
+      </div>
+      <div class="itemActions">
+        <button class="iconBtn" onclick="editExam(${ex.id})">Edit</button>
+        <button class="iconBtn danger" onclick="deleteExam(${ex.id})">Delete</button>
+      </div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+function openExamPrompt(existing = null) {
+  const name = prompt("Exam Name:", existing?.name || "Mocks");
+  if (!name) return;
+
+  const term = prompt("Term/Session:", existing?.term || "2026 Session");
+  const start = prompt("Start Date (YYYY-MM-DD):", existing?.start || "2026-01-09");
+  const end = prompt("End Date (YYYY-MM-DD):", existing?.end || "2026-01-15");
+  const paperFile = prompt("Attach Paper Filename (demo):", existing?.paperFile || "Math_P1_2026.pdf");
+
+  if (existing) {
+    existing.name = name;
+    existing.term = term;
+    existing.start = start;
+    existing.end = end;
+    existing.paperFile = paperFile;
+  } else {
+    state.exams.push({
+      id: Date.now(),
+      name,
+      term,
+      start,
+      end,
+      paperFile
+    });
+  }
+
+  saveState();
+  renderExamList();
+}
+
+function editExam(id) {
+  const ex = (state.exams || []).find(x => x.id === id);
+  if (!ex) return toast("Exam not found");
+  openExamPrompt(ex);
+}
+
+function deleteExam(id) {
+  if (!confirm("Delete this exam?")) return;
+  state.exams = (state.exams || []).filter(x => x.id !== id);
+  saveState();
+  renderExamList();
+}
+
+function seedDemoExams() {
+  state.exams.push(
+    {
+      id: Date.now() + 1,
+      name: "Mocks",
+      term: "Jan 2026",
+      start: "2026-01-09",
+      end: "2026-01-15",
+      paperFile: "Mocks_Papers.zip"
+    },
+    {
+      id: Date.now() + 2,
+      name: "Final Term Examination",
+      term: "May/June 2026",
+      start: "2026-05-17",
+      end: "2026-06-02",
+      paperFile: "FinalTerm_Papers.zip"
+    }
+  );
+  saveState();
+}
+
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+>>>>>>> 0fc4791d050cdf54ab37a7545f94f7e70974907f
 }
